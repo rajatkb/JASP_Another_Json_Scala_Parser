@@ -99,7 +99,7 @@ class JsonIteratorBuilder(factory: JsonFactory) extends JsonBuilderTrait(factory
   override def pushA() = stack = a :: stack
 
   val vas: VAS = new VAS()
-  override def pushVA() = stack = vas :: stack
+  override def pushVAS() = stack = vas :: stack
 
 
   override def pushVAE() = {
@@ -110,7 +110,6 @@ class JsonIteratorBuilder(factory: JsonFactory) extends JsonBuilderTrait(factory
     }
     subJsonArrayStack = tv :: subJsonArrayStack
     this.stack = tst
-
   }
 
   /**
@@ -151,7 +150,6 @@ class JsonIteratorBuilder(factory: JsonFactory) extends JsonBuilderTrait(factory
     }
     subJsonMapStack = tv :: subJsonMapStack
     this.stack = tst
-
   }
 
   private val vsv: VSV = new VSV()

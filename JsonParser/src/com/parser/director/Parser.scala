@@ -11,12 +11,13 @@ class Parser(lexer:LexemeGeneratorTrait, builder:JsonBuilderTrait) extends Parse
   
    
   def parse() = {
-    
     val stack = lexer.getStream().foldLeft(List(this.S,this.STOP))((stack,lexeme) => {
-      this.stackOperation(stack, lexeme) 
+      this.stackOperation(stack, lexeme , builder) 
     })
     
-    if(stack.head == this.STOP)
-      println("parsed")
+    if(stack.head != this.STOP) throw new IllegalStateException("Parsing failed, text consumed but parser not reached it's final state")
+
+    builder.build()
+      
   }
 }

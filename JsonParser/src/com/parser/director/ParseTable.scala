@@ -3,6 +3,7 @@ package com.parser.director
 import scala.annotation.tailrec
 import com.lexer.traits.Lexeme
 import com.lexer.traits.SymbolTable
+import com.json.traits.JsonBuilderTrait
 
 trait ParseTable extends SymbolTable {
   
@@ -17,49 +18,49 @@ trait ParseTable extends SymbolTable {
   val STOP = '$'
    
   
-  @tailrec final def stackOperation(stack:List[Char],lexeme:Lexeme):List[Char] = {
-    println(lexeme,stack)
+  @tailrec final def stackOperation(stack:List[Char],lexeme:Lexeme , builder:JsonBuilderTrait):List[Char] = {
     (stack.head , lexeme.getSymbol()) match {
-      case(`S`,`OPENBRACE`) => stackOperation(List(OPENBRACE,B,CLOSEBRACE):::stack.tail, lexeme)
-      case(`B`,`CLOSEBRACE`) => stackOperation(stack.tail, lexeme)
+      case(`S`,`OPENBRACE`) =>  builder.pushS() ;stackOperation(List(OPENBRACE,B,CLOSEBRACE):::stack.tail, lexeme , builder)
+      case(`B`,`CLOSEBRACE`) => stackOperation(stack.tail, lexeme , builder)
       
-      case(`B`,`STRING`) => stackOperation(List(T,L):::stack.tail, lexeme)
-      case(`B`,`NUMBER`) => stackOperation(List(T,L):::stack.tail, lexeme)
-      case(`B`,`BOOL`) => stackOperation(List(T,L):::stack.tail, lexeme)
+      case(`B`,`STRING`) => stackOperation(List(T,L):::stack.tail, lexeme , builder)
+      case(`B`,`NUMBER`) => stackOperation(List(T,L):::stack.tail, lexeme , builder)
+      case(`B`,`BOOL`) => stackOperation(List(T,L):::stack.tail, lexeme , builder)
       
-      case(`L`,`CLOSEBRACE`) => stackOperation(stack.tail, lexeme)
-      case(`L`,`COMMA`) => stackOperation(List(COMMA,B):::stack.tail, lexeme)
+      // since when the object is ending the L symbol needs to be added 
+      case(`L`,`CLOSEBRACE`) => builder.pushL();builder.pushVSE(); stackOperation(stack.tail, lexeme , builder)
+      case(`L`,`COMMA`) => builder.pushL(); stackOperation(List(COMMA,B):::stack.tail, lexeme , builder)
       
-      case(`T`,`STRING`) => stackOperation(List(K,COLON,V):::stack.tail, lexeme)
-      case(`T`,`NUMBER`) => stackOperation(List(K,COLON,V):::stack.tail, lexeme)
-      case(`T`,`BOOL`) => stackOperation(List(K,COLON,V):::stack.tail, lexeme)
+      case(`T`,`STRING`) => builder.pushP(); stackOperation(List(K,COLON,V):::stack.tail, lexeme , builder)
+      case(`T`,`NUMBER`) => builder.pushP(); stackOperation(List(K,COLON,V):::stack.tail, lexeme , builder)
+      case(`T`,`BOOL`) => builder.pushP(); stackOperation(List(K,COLON,V):::stack.tail, lexeme , builder)
       
-      case(`V`,`OPENBRACE`) => stackOperation(List(S):::stack.tail, lexeme)
+      case(`V`,`OPENBRACE`) => builder.pushVSS();stackOperation(List(S):::stack.tail, lexeme , builder)
       
-      case(`V`,`STRING`) => stackOperation(List(STRING):::stack.tail, lexeme)
-      case(`V`,`NUMBER`) => stackOperation(List(NUMBER):::stack.tail, lexeme)
-      case(`V`,`BOOL`) => stackOperation(List(BOOL):::stack.tail, lexeme)
+      case(`V`,`STRING`) => builder.pushV(lexeme.getString()); stackOperation(List(STRING):::stack.tail, lexeme, builder)
+      case(`V`,`NUMBER`) => builder.pushV(lexeme.getDouble()); stackOperation(List(NUMBER):::stack.tail, lexeme , builder)
+      case(`V`,`BOOL`) => builder.pushV(lexeme.getBoolean()); stackOperation(List(BOOL):::stack.tail, lexeme , builder)
       
-      case(`V`,`OPENBRACKET`) => stackOperation(List(OPENBRACKET,M,E,CLOSEBRACKET):::stack.tail, lexeme)
-      case(`E`,`CLOSEBRACKET`) => stackOperation(stack.tail, lexeme)
-      case(`E`,`COMMA`) => stackOperation(List(COMMA,M,E):::stack.tail, lexeme)
-      case(`M`,`OPENBRACE`) => stackOperation(List(V):::stack.tail, lexeme)
+      case(`V`,`OPENBRACKET`) => builder.pushVAS(); builder.pushA(); stackOperation(List(OPENBRACKET,M,E,CLOSEBRACKET):::stack.tail, lexeme , builder)
+      case(`E`,`CLOSEBRACKET`) => builder.pushA();builder.pushVAE(); stackOperation(stack.tail, lexeme , builder)
+      case(`E`,`COMMA`) => builder.pushA(); stackOperation(List(COMMA,M,E):::stack.tail, lexeme , builder)
+      case(`M`,`OPENBRACE`) => stackOperation(List(V):::stack.tail, lexeme , builder)
       
-      case(`M`,`STRING`) => stackOperation(List(V):::stack.tail, lexeme)
-      case(`M`,`NUMBER`) => stackOperation(List(V):::stack.tail, lexeme)
-      case(`M`,`BOOL`) => stackOperation(List(V):::stack.tail, lexeme)
+      case(`M`,`STRING`) => stackOperation(List(V):::stack.tail, lexeme , builder)
+      case(`M`,`NUMBER`) => stackOperation(List(V):::stack.tail, lexeme , builder)
+      case(`M`,`BOOL`) => stackOperation(List(V):::stack.tail, lexeme , builder)
       
-      case(`M`,`OPENBRACKET`) => stackOperation(List(V):::stack.tail, lexeme)
-      case(`M`,`CLOSEBRACKET`) => stackOperation(stack.tail, lexeme)
-      case(`M`,`COMMA`) => stackOperation(stack.tail, lexeme)
+      case(`M`,`OPENBRACKET`) => stackOperation(List(V):::stack.tail, lexeme , builder)
+      case(`M`,`CLOSEBRACKET`) => stackOperation(stack.tail, lexeme , builder)
+      case(`M`,`COMMA`) => stackOperation(stack.tail, lexeme , builder)
       
-      case(`K`,`STRING`) => stackOperation(List(STRING):::stack.tail, lexeme)
-      case(`K`,`NUMBER`) => stackOperation(List(NUMBER):::stack.tail, lexeme)
-      case(`K`,`BOOL`) => stackOperation(List(BOOL):::stack.tail, lexeme)
+      case(`K`,`STRING`) =>builder.pushK(lexeme.getString()); stackOperation(List(STRING):::stack.tail, lexeme , builder)
+      case(`K`,`NUMBER`) =>builder.pushK(lexeme.getDouble()); stackOperation(List(NUMBER):::stack.tail, lexeme , builder)
+      case(`K`,`BOOL`) => builder.pushK(lexeme.getBoolean()); stackOperation(List(BOOL):::stack.tail, lexeme , builder)
       
       case (stackSymb,lex) if (stackSymb == lex) => stack.tail
       case _ =>try{
-        throw new IllegalStateException("found '"+lexeme.getValue()+"' cannot parse Json, illegal symbol at (l,c):"+lexeme.getLineNumber()+":"+lexeme.getColumnNumber())
+        throw new IllegalStateException("expected "+stack.head+"found '"+lexeme.getValue()+"' cannot parse Json, illegal symbol at (l,c):"+lexeme.getLineNumber()+":"+lexeme.getColumnNumber())
       }catch{
         case e:IllegalAccessError => throw new IllegalStateException("found '"+lexeme.getSymbol()+"' cannot parse Json, illegal symbol at (l,c):"+lexeme.getLineNumber()+":"+lexeme.getColumnNumber()+"\n"+e)
       }

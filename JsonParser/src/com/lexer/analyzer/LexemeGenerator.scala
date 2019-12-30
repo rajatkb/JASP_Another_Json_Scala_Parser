@@ -60,10 +60,11 @@ class LexemeGenerator(tokens:Stream[TextToken]) extends LexemeGeneratorTrait(tok
 //            prevlexArray(0) = new StringLexeme(buffer.toString() , token.lineNumber , token.columnNumber)
 //            prevlexArray(1) = null
             (stateS,true,new StringBuilder(), prevlexArray) }
+        
         case (`state1`, v) => (state1, false,buffer.append(v), prevlexArray )
         
         // Check for boolean
-        case (`state2`,v) if(buffer.toString() == "false" || buffer.toString() == "true" && this.checkValidJsonStructureIdentifier(v))  =>{ 
+        case (`state2`,v) if((buffer.toString() == "false" || buffer.toString() == "true") && this.checkValidJsonStructureIdentifier(v))  =>{ 
             prevlexArray(0) = new BooleanLexeme(buffer.toString(),token.lineNumber,token.columnNumber)
             prevlexArray(1) = new SymbolLexeme(v,token.lineNumber , token.columnNumber)
             (stateS,true, new StringBuilder() , prevlexArray) 
@@ -96,6 +97,7 @@ class LexemeGenerator(tokens:Stream[TextToken]) extends LexemeGeneratorTrait(tok
         case (`state4`,v) if (v == 'e') => (state5,false,buffer.append(v),prevlexArray)
         case (`state5`,v) if (v == '+') => (state6,false,buffer.append(v),prevlexArray)
         case (`state6`,v) if (v.isDigit) => (state6,false,buffer.append(v),prevlexArray)
+        
         case (`state6`,b) if this.checkValidJsonStructureIdentifier(b) => {
           prevlexArray(0) = new NumberLexeme(buffer.toString().trim(),token.lineNumber,token.columnNumber)
           prevlexArray(1) = new SymbolLexeme(b,token.lineNumber , token.columnNumber)

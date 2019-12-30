@@ -7,7 +7,7 @@ abstract class JsonBuilderTrait(factory:JsonFactory) {
   def pushP()
   def pushL() 
   def pushA() 
-  def pushVA()
+  def pushVAS()
   def pushVAE()
   def pushVSS()
   def pushVSE()
