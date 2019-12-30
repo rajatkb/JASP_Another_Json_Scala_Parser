@@ -4,7 +4,7 @@ object Logger {
   var logging = false
   var infol = false
   var debugl = false
-  var timing = false
+  var timing = true
   def info(m:String) = if(logging && infol) println("[INFO]:"+m)
   def error(m:String) = println("[ERROR]:"+m)
   def debug(m:String) = if(logging && debugl) println("[DEBUG]:"+m)
