@@ -1,6 +1,8 @@
 # JASP_Another_Json_Scala_Parser
 It's a Scala Json parser. It parses JSON, and create Map , Arrays and String and Numbers and Booleans embedded in them. It' supposed to be functional in nature, so no mutation. Also it's to support streaming which is work progress, getting immutability and streaming is a tough nut to work out together.  
 
+## How to use ?
+
 ```scala
 
 package com.unit.test
@@ -20,8 +22,10 @@ object Main {
 
 ```  
 
-You can run the above for testing the package
-
+You can run the above for testing the package , 
+* Just import the release Jar or 
+* Create your own by cloning the repository and compile from source.
+* Add the jar as external dependency
 
 
 ## Why a Scala Json Parser again ?  
