@@ -1,5 +1,28 @@
 # JASP_Another_Json_Scala_Parser
-It's a Scala Json parser. It parses JSON, and create Map , Arrays and String and Numbers and Booleans embedded in them. It' supposed to be functional in nature, so no mutation. Also it's to support streaming which is work progress, getting immutability and streaming is a tough nut to work out together.
+It's a Scala Json parser. It parses JSON, and create Map , Arrays and String and Numbers and Booleans embedded in them. It' supposed to be functional in nature, so no mutation. Also it's to support streaming which is work progress, getting immutability and streaming is a tough nut to work out together.  
+
+```scala
+
+package com.unit.test
+
+import com.json.api.JSON
+import com.logger.Logger
+import com.json.struct.JsonString
+
+object Main {
+
+   def main(args:Array[String]):Unit = {
+      val filename = "e://Project Work//JASP_Another_Json_Scala_Parser//JsonParser//test.json"
+      val a = Logger.timer( JSON.getParser(filename).parse() )
+  }
+  
+}
+
+```  
+
+You can run the above for testing the package
+
+
 
 ## Why a Scala Json Parser again ?  
 * Expose the JSON object API allowing you to build complex composition without actually walking through the JSON.
