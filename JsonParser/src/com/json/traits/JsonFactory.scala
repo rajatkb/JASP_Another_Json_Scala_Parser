@@ -5,7 +5,7 @@ package com.json.traits
 trait JsonFactory {
     def createJsonStringEntity(str:String):JsonStringTrait
     def createJsonNumberEntity(num:Double):JsonNumberTrait 
-    def createJsonList(list:Iterable[JsonValue]):JsonListTrait 
+    def createJsonList(list:Seq[JsonValue]):JsonListTrait 
     def createJsonMap(keyValueMap:Map[JsonKey,JsonValue]):JsonMapTrait
     def createJsonBooleanEntity(b:Boolean):JsonBoolTrait
 }

@@ -24,7 +24,7 @@ object JsonPrototypeFactory {
   
     override def createJsonStringEntity(str:String):JsonStringTrait = jsonString.copy(str)
     override def createJsonNumberEntity(num:Double):JsonNumberTrait = jsonNumber.copy(num)
-    override def createJsonList(list:Iterable[JsonValue]):JsonListTrait = jsonList.copy(list)
+    override def createJsonList(list:Seq[JsonValue]):JsonListTrait = jsonList.copy(list)
     override def createJsonMap(keyValueMap: Map[JsonKey,JsonValue]):JsonMapTrait = jsonMap.copy(keyValueMap)
     override def createJsonBooleanEntity(b:Boolean):JsonBoolTrait = jsonBool.copy(b)
   }
