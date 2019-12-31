@@ -2,18 +2,11 @@ package com.json.builder
 
 import com.json.traits.JsonFactory
 import com.json.traits.JsonUnit
-import com.json.struct.JsonObject
 import com.json.traits.JsonKey
 import com.json.traits.JsonValue
-import com.json.traits.JsonValue
-import com.json.struct.JsonString
 import com.json.traits.JsonMapTrait
 import scala.annotation.tailrec
-import com.json.traits.JsonMapTrait
-import com.json.traits.JsonValue
 import com.json.traits.JsonKey
-import com.json.traits.JsonMapTrait
-import com.json.traits.JsonListTrait
 import com.json.traits.JsonMapTrait
 import com.json.traits.JsonListTrait
 import com.json.traits.JsonBuilderTrait

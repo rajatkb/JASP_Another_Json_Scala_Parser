@@ -29,17 +29,16 @@ object JsonPrototypeFactory {
     override def createJsonBooleanEntity(b:Boolean):JsonBoolTrait = jsonBool.copy(b)
   }
   
-  var factory:JsonFactory = null
+  private var factory:JsonFactory = null
   /**
    * Take argument of prototypes of the following types
    * The JsonPair is a final type and cannot be extended and only used internally for the purpose of creating JsonObject
    * Hence initialised concretely, even though following prototype pattern
    */
   def getInstance(jsonMap:JsonMapTrait ,jsonList:JsonListTrait, jsonNumber:JsonNumberTrait , jsonString:JsonStringTrait , jsonBool:JsonBoolTrait) = {
-      if(factory == null){
-        factory = new JsonPrototypeFactory(jsonMap,jsonList,jsonNumber,jsonString,jsonBool)
-        Logger.info("created factory instance")
-      }
+      factory = new JsonPrototypeFactory(jsonMap,jsonList,jsonNumber,jsonString,jsonBool)
       factory
   }
+  
+  
 }

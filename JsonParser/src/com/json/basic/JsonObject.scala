@@ -1,4 +1,4 @@
-package com.json.struct
+package com.json.basic
 //import scala.collection.mutable.HashMap
 
 import com.json.traits.JsonUnit
@@ -14,10 +14,9 @@ import com.json.traits.JsonValue
  */
 class JsonObject(value:Map[JsonKey , JsonValue]) extends JsonMapTrait(value) {
   override def toString() = "{"+value.toList.map(f => f._1 + ":" + f._2).mkString(",\n")+"}"
-  override def getValue():Map[JsonKey,JsonValue] = value.toMap
   override def copy(v:Any) = new JsonObject(v.asInstanceOf[Map[JsonKey,JsonValue]])
-  override def apply(key:String):JsonValue =  value.get(new JsonString(key)).getOrElse(null)
-  override def apply(key:JsonKey) = value.get(key).getOrElse(null)
-  override def apply(key:Double) = value.get(new JsonNumber(key)).getOrElse(null)
-  override def apply(key:Boolean) = value.get(new JsonBoolean(key)).getOrElse(null)
+  
+  override def apply(key:String) = super.apply(new JsonString(key))
+  override def apply(key:Double) = super.apply(new JsonNumber(key.toInt ))
+  override def apply(key:Boolean) = super.apply(new JsonBoolean(key))
 }

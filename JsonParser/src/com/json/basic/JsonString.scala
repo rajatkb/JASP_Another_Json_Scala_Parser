@@ -1,4 +1,4 @@
-package com.json.struct
+package com.json.basic
 
 import com.json.traits.JsonStringTrait
 /**
@@ -7,6 +7,6 @@ import com.json.traits.JsonStringTrait
  */
 case class JsonString(value:String) extends JsonStringTrait(value){
   override def toString() = if(value == null) "null" else "\""+value+"\""
-  override def getValue() = value
+  
   override def copy(v:Any) = new JsonString(v.asInstanceOf[String])
 }

@@ -2,7 +2,7 @@ package com.unit.test
 
 import com.json.api.JSON
 import com.logger.Logger
-import com.json.struct.JsonString
+import com.json.basic.JsonString
 import com.file.tokenizer
 import java.io.File
 
@@ -14,7 +14,9 @@ object Main {
       
       val a = Logger.timer( JSON.getParser(filename).parse() )
   
-      val b = a("context")("caches")(2)
+      val b = a("context")("caches")(2)("type")
+      
+      
       
       print(b)
       

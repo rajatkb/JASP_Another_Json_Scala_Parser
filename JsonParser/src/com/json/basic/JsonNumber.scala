@@ -1,4 +1,4 @@
-package com.json.struct
+package com.json.basic
 
 import com.json.traits.JsonUnit
 import com.json.traits.JsonNumberTrait
@@ -8,7 +8,6 @@ import com.json.traits.JsonNumberTrait
  */
 case class JsonNumber(value:Double) extends JsonNumberTrait(value) {
   override def toString() =  value.toString()
-  override def getValue() = value
   override def copy(v:Any) = new JsonNumber(v.asInstanceOf[Double])
   
 }

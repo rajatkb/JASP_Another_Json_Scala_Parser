@@ -4,11 +4,11 @@ import com.file.tokenizer.Tokenizer
 import com.lexer.analyzer.LexemeGenerator
 import com.json.builder.JsonIteratorBuilder
 import com.parser.director.Parser
-import com.json.struct.JsonObject
-import com.json.struct.JsonArray
-import com.json.struct.JsonNumber
-import com.json.struct.JsonString
-import com.json.struct.JsonBoolean
+import com.json.basic.JsonObject
+import com.json.basic.JsonArray
+import com.json.basic.JsonNumber
+import com.json.basic.JsonString
+import com.json.basic.JsonBoolean
 import com.json.factory.JsonPrototypeFactory
 import com.json.traits.JsonMapTrait
 import com.json.traits.JsonListTrait
