@@ -6,4 +6,5 @@ abstract class JsonMapTrait(value:Map[JsonKey , JsonValue]) extends JsonUnit wit
   override def apply(key:JsonKey) = value.get(key).getOrElse(null)  
   override def getValue():Map[JsonKey,JsonValue] = value
   
+  
 }

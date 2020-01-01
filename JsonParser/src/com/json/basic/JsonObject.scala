@@ -12,11 +12,24 @@ import com.json.traits.JsonValue
  * Since the pair is only to be used by the parser the Map is built using a list of (JsonKey,JsonValue) 
  * which can be easily be obtained using getValue() of JsonPair object.
  */
-class JsonObject(value:Map[JsonKey , JsonValue]) extends JsonMapTrait(value) {
+
+object JsonObject{
+  def apply(value:Map[JsonKey , JsonValue] = Map()) = new JsonObject(value)
+  def apply(args:(JsonKey,JsonValue)*) = new JsonObject(args.toMap)
+}
+
+class JsonObject(value:Map[JsonKey , JsonValue] = Map()) extends JsonMapTrait(value) {
+  
   override def toString() = "{"+value.toList.map(f => f._1 + ":" + f._2).mkString(",\n")+"}"
   override def copy(v:Any) = new JsonObject(v.asInstanceOf[Map[JsonKey,JsonValue]])
+  
   
   override def apply(key:String) = super.apply(new JsonString(key))
   override def apply(key:Double) = super.apply(new JsonNumber(key.toInt ))
   override def apply(key:Boolean) = super.apply(new JsonBoolean(key))
+  
+  
+  def this(args:(JsonKey,JsonValue)* ) = this(args.toMap)
+  
+
 }

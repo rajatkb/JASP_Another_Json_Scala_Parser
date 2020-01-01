@@ -7,4 +7,6 @@ abstract class JsonListTrait(value:Seq[JsonValue]) extends JsonUnit with JsonVal
    override def apply(key:Double):JsonValue = value.applyOrElse(key.toInt, null)
    override def apply(key:Boolean):JsonValue =  throw new IllegalAccessException("JsonListTrait does not supports apply, try getValue()")
    override def getValue() = value
+   
+   
 }

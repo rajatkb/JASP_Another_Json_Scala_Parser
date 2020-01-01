@@ -4,21 +4,16 @@ import scala.io.Source
 import java.io.IOException
 import com.logger.Logger
 import java.io.FileNotFoundException
+import scala.io.BufferedSource
 
-class Tokenizer(filename:String) {
+
+class Tokenizer(file:Source) {
   
-  val reader = try{
-    Source.fromFile(filename)
-  }catch{
-    case e:IOException => Logger.error("Could not read file"); throw e 
-    case e:FileNotFoundException => Logger.error("Could not find the file"); throw e
-  }
-  
-  def getStream() = reader.getLines()
+  def getStream() = file.getLines().toStream
                           .zipWithIndex.toStream
                           .flatMap {
                               case (line,lineNumber) => {
-                                (line+"\n").zipWithIndex.toStream.map {
+                                (line+"\n").view.zipWithIndex.toStream.map {
                                   case (char,columnNumber) => new TextToken(char,lineNumber+1,columnNumber+1)
                                 }
                               }  

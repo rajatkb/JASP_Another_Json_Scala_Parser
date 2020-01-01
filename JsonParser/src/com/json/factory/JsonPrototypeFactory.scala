@@ -36,7 +36,8 @@ object JsonPrototypeFactory {
    * Hence initialised concretely, even though following prototype pattern
    */
   def getInstance(jsonMap:JsonMapTrait ,jsonList:JsonListTrait, jsonNumber:JsonNumberTrait , jsonString:JsonStringTrait , jsonBool:JsonBoolTrait) = {
-      factory = new JsonPrototypeFactory(jsonMap,jsonList,jsonNumber,jsonString,jsonBool)
+      if(factory == null)
+        factory = new JsonPrototypeFactory(jsonMap,jsonList,jsonNumber,jsonString,jsonBool)
       factory
   }
   

@@ -9,24 +9,38 @@ package com.unit.test
 
 import com.json.api.JSON
 import com.logger.Logger
-import com.json.struct.JsonString
+import com.json.basic.JsonObject
+import com.json.traits.JsonKey
+import com.json.traits.JsonValue
+import com.json.basic.JsonArray
+import com.json.api.Implicits._
 
 object Main {
+  
 
    def main(args:Array[String]):Unit = {
-      	val filename = "e://Project Work//JASP_Another_Json_Scala_Parser//JsonParser//test.json"
-      	val a = Logger.timer( JSON.getParser(filename).parse() )
-  	
-	val b = a("context")("caches")(2)
-      	print(b)
+      val filename = "E://Project Work//JASP_Another_Json_Scala_Parser//JsonParser//test.json"
+      
+      val a = Logger.timer( JSON.parseFile(filename) )
+  
+      val b = a("context")("caches")(2)
+     
+      
+      
+      val e= JsonArray( 1:JsonValue )
+      
+      
+      val m = new JsonObject(1 -> 2 , "hello" -> new JsonArray(1,2,3,4) , 4 -> new JsonArray(1,2,3)  )
+      
+      print(m("hello")(0))
 
-  }
+   }
   
 }
 
 ```  
 
-You can run the above for testing the package , 
+You can run the above for testing the package by changing the filename , 
 * Just import the release Jar or 
 * Create your own by cloning the repository and compile from source.
 * Add the jar as external dependency
@@ -36,6 +50,7 @@ You can run the above for testing the package ,
 * Expose the JSON object API allowing you to build complex composition without actually walking through the JSON.
   You can just inherit the MapTrait , ListTrait etc and push them into the parser.
 * Because It's fun and I did for educational purpose also it was a good way of practicing OOP design pattern  
+* It now have tons of implicits to make working with the JsonArray and JsonObject a syntactical sugarry breeze
 
 ## TO-DO 
 
@@ -47,7 +62,7 @@ You can run the above for testing the package ,
     in a on demand fashion.
 * **Fix the lexer and create a less verboe and faster variant** : A possible stack based solution or a Derivative Lexer
     should be able to tackle the same
-* **Turn this project into a Maven Artifact Library**
+* ~~**Turn this project into a Maven Artifact Library**~~ 
 
 ## How to Contribute
 * Just move to the com.unit.test package. then move to Object JSON. From there on you can follow the code
