@@ -3,8 +3,8 @@ package com.json.traits
 
 abstract class JsonMapTrait(value:Map[JsonKey , JsonValue]) extends JsonUnit with JsonValue{
   override def copy(a:Any):JsonMapTrait
-  override def apply(key:JsonKey) = value.get(key).getOrElse(null)  
+  override def apply(key:JsonKey) = value.get(key).getOrElse(null)
+  override def apply(int:Int) = throw new IllegalAccessException("JsonMapTrait does not supports apply on Int, try getValue()")
   override def getValue():Map[JsonKey,JsonValue] = value
-  
   
 }

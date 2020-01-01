@@ -218,20 +218,6 @@ class JsonIteratorBuilder(factory: JsonFactory) extends JsonBuilderTrait(factory
     case (_, _) => factory.createJsonList(tempV :: List[JsonValue]() ++ tempA.getValue())
   }
 
-  /** OLD METHODS MAY BE REQUIRED **/
-  //  private def pushAStack(tempA:JsonListTrait , tempAStack:List[JsonListTrait])  = (tempA , tempAStack) match {
-  //    case (null,null) => Nil
-  //    case (null , Nil) => Nil
-  //    case (_ , null) => List(tempA)
-  //    case (_,_) => tempA::tempAStack
-  //  }
-  //
-  //  private def popAStack(tempAStack:List[JsonListTrait]) = tempAStack match {
-  //    case null => (null,null)
-  //    case Nil => (null,Nil)
-  //    case _ => (tempAStack.head , tempAStack.tail)
-  //  }
-  //
 
   /**
    * Traverse the stack from top to bottom and build the

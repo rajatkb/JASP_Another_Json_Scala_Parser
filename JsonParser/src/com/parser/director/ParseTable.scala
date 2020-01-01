@@ -4,6 +4,7 @@ import scala.annotation.tailrec
 import com.lexer.traits.Lexeme
 import com.lexer.traits.SymbolTable
 import com.json.traits.JsonBuilderTrait
+import com.logger.Logger
 
 trait ParseTable extends SymbolTable {
   
@@ -19,6 +20,7 @@ trait ParseTable extends SymbolTable {
    
   
   @tailrec final def stackOperation(stack:List[Char],lexeme:Lexeme , builder:JsonBuilderTrait):List[Char] = {
+    
     (stack.head , lexeme.getSymbol()) match {
       case(`S`,`OPENBRACE`) =>  builder.pushS() ;stackOperation(List(OPENBRACE,B,CLOSEBRACE):::stack.tail, lexeme , builder)
       case(`B`,`CLOSEBRACE`) => stackOperation(stack.tail, lexeme , builder)

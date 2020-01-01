@@ -11,20 +11,19 @@ object Main {
   
 
    def main(args:Array[String]):Unit = {
-      val filename = "E://Project Work//JASP_Another_Json_Scala_Parser//JsonParser//test.json"
+      val filename = "E://Project Work//citylots.json"
+      val filename2 = "E://Project Work//JASP_Another_Json_Scala_Parser//JsonParser//test.json" 
+//      val a = Logger.timer( JSON.parseFile(filename) )
+      /**
+       * Benchmark with citylots.json : Elapsed time: 227.2318s
+       * More optimization needed, need to reduce it under a second
+       */
       
-      val a = Logger.timer( JSON.parseFile(filename) )
-  
-      val b = a("context")("caches")(2)
-     
+      val map = JsonObject(1 -> JsonArray(1,2,3,"Hello",false), 
+                           3 -> JsonArray(JsonObject(1->2,3->4),3,4,"false",false))
+      println(map)
       
       
-      val e = JsonArray( 1 , 2 , 3 )
-      
-      
-      val m = new JsonObject(1 -> 2 , "hello" -> new JsonArray(1,2,3,4) , 4 -> new JsonArray(1,2,3)  )
-      
-      print(m("hello")(0))
 
    }
   

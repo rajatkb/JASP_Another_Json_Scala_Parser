@@ -12,6 +12,5 @@ object JsonString{
 
 case class JsonString(value:String) extends JsonStringTrait(value){
   override def toString() = if(value == null) "null" else "\""+value+"\""
-  
   override def copy(v:Any) = new JsonString(v.asInstanceOf[String])
 }

@@ -8,8 +8,9 @@ import com.lexer.lexicon.SymbolLexeme
 import com.lexer.lexicon.NumberLexeme
 import com.lexer.lexicon.BooleanLexeme
 import com.lexer.traits.LexemeGeneratorTrait
+import com.file.tokenizer.TextToken
 
-class LexemeGenerator(tokens:Stream[TextToken]) extends LexemeGeneratorTrait(tokens){
+class LexemeGenerator(tokens: => Stream[TextToken]) extends LexemeGeneratorTrait(tokens){
   
     val stateS = 0
     val state1 = 1 // string entry
@@ -22,10 +23,14 @@ class LexemeGenerator(tokens:Stream[TextToken]) extends LexemeGeneratorTrait(tok
     val state8 = 8 // null values like boolean
     val stateF = -1
     
-    val result = tokens.scanLeft((stateS,false,new StringBuilder("") , Array[Lexeme](null,null)))((acc,token) => {
+
+        
+    
+     override def getStream() = tokens.scanLeft((stateS,false,new StringBuilder("") , Array[Lexeme](null,null)))((acc,token) => {
+      
+
       
       val (state,output,buffer,prevlexArray) = acc
-      
 
       (state,token.char) match {
         // Check for json structure symbol
@@ -57,9 +62,9 @@ class LexemeGenerator(tokens:Stream[TextToken]) extends LexemeGeneratorTrait(tok
                 }
               }
             }
-//            prevlexArray(0) = new StringLexeme(buffer.toString() , token.lineNumber , token.columnNumber)
-//            prevlexArray(1) = null
-            (stateS,true,new StringBuilder(), prevlexArray) }
+
+            buffer.clear()
+            (stateS,true, buffer, prevlexArray) }
         
         case (`state1`, v) => (state1, false,buffer.append(v), prevlexArray )
         
@@ -67,12 +72,14 @@ class LexemeGenerator(tokens:Stream[TextToken]) extends LexemeGeneratorTrait(tok
         case (`state2`,v) if((buffer.toString() == "false" || buffer.toString() == "true") && this.checkValidJsonStructureIdentifier(v))  =>{ 
             prevlexArray(0) = new BooleanLexeme(buffer.toString(),token.lineNumber,token.columnNumber)
             prevlexArray(1) = new SymbolLexeme(v,token.lineNumber , token.columnNumber)
-            (stateS,true, new StringBuilder() , prevlexArray) 
+            buffer.clear()
+            (stateS,true, buffer , prevlexArray) 
           }
         case (`state2`,v) if(buffer.toString() == "false" || buffer.toString() == "true" ) =>{ 
             prevlexArray(0) = new BooleanLexeme(buffer.toString(),token.lineNumber,token.columnNumber)
             prevlexArray(1) = null
-            (stateS,true, new StringBuilder() , prevlexArray) 
+            buffer.clear()
+            (stateS,true, buffer , prevlexArray) 
           }
         case (`stateS`,'f') => (state2,false,buffer.append('f'),prevlexArray)
         case (`stateS`,'t') => (state2,false,buffer.append('t'),prevlexArray)
@@ -80,10 +87,17 @@ class LexemeGenerator(tokens:Stream[TextToken]) extends LexemeGeneratorTrait(tok
         case (`state2`,_) => throw new IllegalStateException("Bad supposed boolean value at (l,n):"+token.lineNumber+","+token.columnNumber)
         
         //Check for null
+        case (`state8`, v) if(buffer.toString() == "null" && this.checkValidJsonStructureIdentifier(v)) => {
+          prevlexArray(0) = new StringLexeme(null,token.lineNumber,token.columnNumber)
+          prevlexArray(1) = new SymbolLexeme(v,token.lineNumber , token.columnNumber)
+          buffer.clear()
+          (stateS,true, buffer , prevlexArray)
+        }
         case (`state8`, v) if(buffer.toString() == "null") => {
           prevlexArray(0) = new StringLexeme(null,token.lineNumber,token.columnNumber)
           prevlexArray(1) = null
-          (stateS,true, new StringBuilder() , prevlexArray)
+          buffer.clear()
+          (stateS,true, buffer , prevlexArray)
         }
         case (`stateS`,'n') => (state8,false,buffer.append('n'),prevlexArray)
         case (`state8`, b) if(Array('u','l','l').contains(b)) => (state8,false,buffer.append(b),prevlexArray)
@@ -101,33 +115,39 @@ class LexemeGenerator(tokens:Stream[TextToken]) extends LexemeGeneratorTrait(tok
         case (`state6`,b) if this.checkValidJsonStructureIdentifier(b) => {
           prevlexArray(0) = new NumberLexeme(buffer.toString().trim(),token.lineNumber,token.columnNumber)
           prevlexArray(1) = new SymbolLexeme(b,token.lineNumber , token.columnNumber)
-          (stateS,true,new StringBuilder(), prevlexArray)
+          buffer.clear()
+          (stateS,true,buffer, prevlexArray)
         }
         case (`state3`,b) if this.checkValidJsonStructureIdentifier(b) => {
           prevlexArray(0) = new NumberLexeme(buffer.toString().trim(),token.lineNumber,token.columnNumber)
           prevlexArray(1) = new SymbolLexeme(b,token.lineNumber , token.columnNumber)
-          (stateS,true,new StringBuilder(), prevlexArray)
+          buffer.clear()
+          (stateS,true,buffer, prevlexArray)
         }
         case (`state4`,b) if this.checkValidJsonStructureIdentifier(b) => {
           prevlexArray(0) = new NumberLexeme(buffer.toString().trim(),token.lineNumber,token.columnNumber)
           prevlexArray(1) = new SymbolLexeme(b,token.lineNumber , token.columnNumber)
-          (stateS,true,new StringBuilder(), prevlexArray)
+          buffer.clear()
+          (stateS,true,buffer, prevlexArray)
         }
         
         case (`state6`,b)  => {
           prevlexArray(0) = new NumberLexeme(buffer.toString().trim(),token.lineNumber,token.columnNumber)
           prevlexArray(1) = null
-          (stateS,true,new StringBuilder(), prevlexArray)
+          buffer.clear()
+          (stateS,true,buffer, prevlexArray)
         }
         case (`state3`,b)  => {
           prevlexArray(0) = new NumberLexeme(buffer.toString().trim(),token.lineNumber,token.columnNumber)
           prevlexArray(1) = null
-          (stateS,true,new StringBuilder(), prevlexArray)
+          buffer.clear()
+          (stateS,true,buffer, prevlexArray)
         }
         case (`state4`,b)  => {
           prevlexArray(0) = new NumberLexeme(buffer.toString().trim(),token.lineNumber,token.columnNumber)
           prevlexArray(1) = null
-          (stateS,true,new StringBuilder(), prevlexArray)
+          buffer.clear()
+          (stateS,true,buffer, prevlexArray)
         }
         
         
@@ -136,9 +156,15 @@ class LexemeGenerator(tokens:Stream[TextToken]) extends LexemeGeneratorTrait(tok
       }
       
     })
-    .collect({ case (state,output,buffer,value) if(output == true) => value })
+    .filter { case (state,output,buffer,value) => output }
+    .map(f => f._4)
     .flatten
-    .filter(p => p != null )
+    .filter(p => p != null ).toStream
     
-    override def getStream() = result
+    
+    
+    
+    
+    
+    
 }

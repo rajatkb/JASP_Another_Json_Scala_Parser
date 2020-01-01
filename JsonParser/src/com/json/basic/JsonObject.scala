@@ -24,11 +24,6 @@ class JsonObject(value:Map[JsonKey , JsonValue] = Map()) extends JsonMapTrait(va
   override def copy(v:Any) = new JsonObject(v.asInstanceOf[Map[JsonKey,JsonValue]])
   
   
-  override def apply(key:String) = super.apply(new JsonString(key))
-  override def apply(key:Double) = super.apply(new JsonNumber(key.toInt ))
-  override def apply(key:Boolean) = super.apply(new JsonBoolean(key))
-  
-  
   def this(args:(JsonKey,JsonValue)* ) = this(args.toMap)
   
 
