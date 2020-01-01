@@ -15,7 +15,6 @@ import com.json.traits.JsonKey
 object JsonArray {
   def apply(a1: JsonValue, a2: JsonValue*) = new JsonArray(a1 +: a2)
   def apply(value: Seq[JsonValue] = Nil) = new JsonArray(value)
-  implicit def numtoValue(a: Double): JsonValue = new JsonNumber(a)
 }
 
 class JsonArray(value: Seq[JsonValue] = Nil) extends JsonListTrait(value) {

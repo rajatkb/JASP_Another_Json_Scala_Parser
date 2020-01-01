@@ -1,12 +1,11 @@
 package com.unit.test
 
-import com.json.api.JSON
+
+import com.api.Jasp._
 import com.logger.Logger
 import com.json.basic.JsonObject
-import com.json.traits.JsonKey
-import com.json.traits.JsonValue
 import com.json.basic.JsonArray
-import com.json.api.Implicits._
+
 
 object Main {
   
@@ -20,7 +19,7 @@ object Main {
      
       
       
-      val e= JsonArray( 1:JsonValue )
+      val e = JsonArray( 1 , 2 , 3 )
       
       
       val m = new JsonObject(1 -> 2 , "hello" -> new JsonArray(1,2,3,4) , 4 -> new JsonArray(1,2,3)  )

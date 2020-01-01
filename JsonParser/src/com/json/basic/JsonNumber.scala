@@ -13,7 +13,6 @@ import com.json.traits.JsonKey
 
 object JsonNumber {
   def apply(value: Double) = new JsonNumber(value)
-  implicit def numtoValue(a: Double): JsonValue = new JsonNumber(a)
 }
 
 case class JsonNumber(value: Double) extends JsonNumberTrait(value) {
