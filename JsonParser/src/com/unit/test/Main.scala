@@ -28,15 +28,22 @@ object Main {
     val filename2 = "E://Project Work//JASP_Another_Json_Scala_Parser//JsonParser//test.json"
     val filename3 = "E://Project Work//JASP_Another_Json_Scala_Parser//JsonParser//test2.json"
      
-    val a = Logger.timer( JSON.parseFile(filename3) )
+//    val a = Logger.timer( JSON.parseFile(filename3) )
+    
 
-    print(a)
-//    print(List(new JsonString("hello")).mkString(","))
-//    val map = JsonObject(
-//      1 -> JsonArray(1, 2, 3, "Hello", false),
-//      3 -> JsonArray(JsonObject(1 -> 2, 3 -> 4), 3, 4, "false", false))
 
+    
+    val map = JsonObject(
+      1 -> JsonArray(1, 2, 3, "Hello", false),
+      3 -> JsonArray(JsonObject(1 -> 2, 3 -> 4), 3, 4, "false", false))
       
+    var head2 = map.getStringStream() 
+    for(i <- 1 to 10){
+      print(head2.head)  
+      head2 = head2.tail
+    }
+    
+
 
   }
 

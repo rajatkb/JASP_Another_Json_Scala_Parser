@@ -6,6 +6,7 @@ import com.json.traits.JsonValue
 import com.json.traits.JsonKey
 import com.json.traits.JsonMapTrait
 import com.json.traits.JsonValue
+import com.json.traits.JsonWriteable
 
 /**
  * :JsonObject => HashMap(JsonKey -> JsonValue)
@@ -25,6 +26,7 @@ class JsonObject(value:Map[JsonKey , JsonValue] = Map()) extends JsonMapTrait(va
   
   
   def this(args:(JsonKey,JsonValue)* ) = this(args.toMap)
-  
+ 
+ 
 
 }

@@ -5,6 +5,7 @@ import com.json.traits.JsonValue
 import com.json.traits.JsonListTrait
 import com.json.traits.JsonValue
 import com.json.traits.JsonKey
+import com.json.traits.JsonWriteable
 
 /**
  * :JsonArray => Seq[JsonValue]
@@ -17,11 +18,12 @@ object JsonArray {
   def apply(value: Seq[JsonValue] = Nil) = new JsonArray(value)
 }
 
-class JsonArray(value: Seq[JsonValue] = Nil) extends JsonListTrait(value) {
+class JsonArray(value: Seq[JsonValue] = Nil) extends JsonListTrait(value)  {
   override def toString() = "[" + value.mkString(",") + "]"
   override def copy(v: Any) = new JsonArray(v.asInstanceOf[Seq[JsonValue]])
 
   def this(a1: JsonValue, a2: JsonValue*) = this(a1 +: a2)
+
 
 }
 

@@ -7,5 +7,9 @@ abstract class JsonListTrait(value:Seq[JsonValue]) extends JsonUnit with JsonVal
    override def apply(key:JsonKey):JsonValue = throw new IllegalAccessException("JsonArrayTrait does not supports apply on JsonKey, try getValue()")
    override def getValue() = value
    
-   
+     
+  override def getStringStream() = {
+     Stream("[")++value.toStream.flatMap(f => f.getStringStream() ++ Stream(","))++Stream("]")
+   }
+
 }
