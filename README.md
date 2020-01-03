@@ -20,6 +20,8 @@ object Main {
       /**
        * Benchmark with citylots.json : Elapsed time: 227.2318s
        * More optimization needed, need to reduce it under a second
+       * 
+       * 
        */
       
       val map = JsonObject(1 -> JsonArray(1,2,3,"Hello",false), 
