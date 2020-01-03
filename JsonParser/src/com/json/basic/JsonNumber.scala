@@ -4,6 +4,7 @@ import com.json.traits.JsonUnit
 import com.json.traits.JsonNumberTrait
 import com.json.traits.JsonValue
 import com.json.traits.JsonKey
+import com.json.traits.JsonWriteable
 
 /**
  * :JsonNumber => Double

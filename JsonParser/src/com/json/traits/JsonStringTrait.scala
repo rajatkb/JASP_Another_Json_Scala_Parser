@@ -5,5 +5,11 @@ abstract class JsonStringTrait(str:String) extends JsonKey with JsonValue {
   override def getValue():String = str
   override def apply(key:JsonKey):JsonValue = throw new IllegalAccessException("JsonStringTrait does not supports apply, try getValue()")
   override def apply(key:Int):JsonValue = throw new IllegalAccessException("JsonStringTrait does not supports apply, try getValue()")
+ 
+  override def getStringStream() = {
+    Stream("\""+str+"\"")
+  }
+ 
+
 }
 
