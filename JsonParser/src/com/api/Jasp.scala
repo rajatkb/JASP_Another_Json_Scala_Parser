@@ -26,15 +26,20 @@ import scala.io.BufferedSource
 import com.json.traits.JsonFactory
 import com.json.traits.JsonMapTrait
 import com.json.traits.JsonMapTrait
+import com.json.traits.JsonFactory
 
 object Jasp {
+  
+  private val defaultInstance = JsonPrototypeFactory.getInstance(  new JsonObject(),new JsonArray(),new JsonNumber(0),new JsonString(null),new JsonBoolean(false))
 
-  implicit def numtoValue(a: Double): JsonValue = new JsonNumber(a)
-  implicit def numtoKey(a: Double): JsonKey = new JsonNumber(a)
-  implicit def stringtoValue(a: String): JsonValue = new JsonString(a)
-  implicit def stringtoKey(a: String): JsonKey = new JsonString(a)
-  implicit def booltoKey(a: Boolean): JsonKey = new JsonBoolean(a)
-  implicit def booltoValue(a: Boolean): JsonValue = new JsonBoolean(a)
+  // THE IMPLICIT ARE ALWAYS BOUND TO THE CURRENT FACTORY OBJECT THAT CREATES THE OBJECTS BASED ON USER IMPLEMENTATION
+  // OR WITH DEFAULT SUPPORTED BY THE LIBRARY
+  implicit def numtoValue(a: Double): JsonValue = JsonPrototypeFactory.getCurrentInstance().createJsonNumberEntity(a)
+  implicit def numtoKey(a: Double): JsonKey = JsonPrototypeFactory.getCurrentInstance().createJsonNumberEntity(a)
+  implicit def stringtoValue(a: String): JsonValue = JsonPrototypeFactory.getCurrentInstance().createJsonStringEntity(a)
+  implicit def stringtoKey(a: String): JsonKey = JsonPrototypeFactory.getCurrentInstance().createJsonStringEntity(a)
+  implicit def booltoKey(a: Boolean): JsonKey = JsonPrototypeFactory.getCurrentInstance().createJsonBooleanEntity(a)
+  implicit def booltoValue(a: Boolean): JsonValue = JsonPrototypeFactory.getCurrentInstance().createJsonBooleanEntity(a)
   implicit def numtoKeyArrowAssoc(a: Double): ArrowAssoc[JsonKey] = new ArrowAssoc(a)
   implicit def stringtoKeyArrowAssoc(a: String): ArrowAssoc[JsonKey] = new ArrowAssoc(a)
   implicit def booleantoKeyArrowAssoc(a: Boolean): ArrowAssoc[JsonKey] = new ArrowAssoc(a)
@@ -71,12 +76,7 @@ object Jasp {
     }
 
     def parseString(data: String): JsonMapTrait = {
-      parseWithAutoclose(data, JsonPrototypeFactory.getInstance(
-        new JsonObject(),
-        new JsonArray(),
-        new JsonNumber(0),
-        new JsonString(null),
-        new JsonBoolean(false)))(fromString)
+      parseWithAutoclose(data, defaultInstance)(fromString)
     }
 
     def parseString(
@@ -96,12 +96,7 @@ object Jasp {
 
     def parseFile(filename: String): JsonMapTrait = {
 
-      parseWithAutoclose(filename, JsonPrototypeFactory.getInstance(
-        new JsonObject(),
-        new JsonArray(),
-        new JsonNumber(0),
-        new JsonString(null),
-        new JsonBoolean(false)))(fromFile)
+      parseWithAutoclose(filename, defaultInstance)(fromFile)
 
     }
 

@@ -44,7 +44,7 @@ trait ParseTable extends SymbolTable {
       case(`V`,`BOOL`) => builder.pushV(lexeme.getBoolean()); stackOperation(List(BOOL):::stack.tail, lexeme , builder)
       
       case(`V`,`OPENBRACKET`) => builder.pushVAS(); builder.pushA(); stackOperation(List(OPENBRACKET,M,E,CLOSEBRACKET):::stack.tail, lexeme , builder)
-      case(`E`,`CLOSEBRACKET`) => builder.pushA();builder.pushVAE(); stackOperation(stack.tail, lexeme , builder)
+      case(`E`,`CLOSEBRACKET`) => builder.pushVAE(); stackOperation(stack.tail, lexeme , builder)
       case(`E`,`COMMA`) => builder.pushA(); stackOperation(List(COMMA,M,E):::stack.tail, lexeme , builder)
       case(`M`,`OPENBRACE`) => stackOperation(List(V):::stack.tail, lexeme , builder)
       
@@ -54,7 +54,7 @@ trait ParseTable extends SymbolTable {
       
       case(`M`,`OPENBRACKET`) => stackOperation(List(V):::stack.tail, lexeme , builder)
       case(`M`,`CLOSEBRACKET`) => stackOperation(stack.tail, lexeme , builder)
-      case(`M`,`COMMA`) => stackOperation(stack.tail, lexeme , builder)
+      case(`M`,`COMMA`) => builder.pushV(null:String); stackOperation(stack.tail, lexeme , builder)
       
       case(`K`,`STRING`) =>builder.pushK(lexeme.getString()); stackOperation(List(STRING):::stack.tail, lexeme , builder)
       case(`K`,`NUMBER`) =>builder.pushK(lexeme.getDouble()); stackOperation(List(NUMBER):::stack.tail, lexeme , builder)
