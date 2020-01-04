@@ -31,14 +31,17 @@ object Main {
     
 
     	// This pretty syntax alas is only possible in Scala with tons of implicits
-       	// You can also have compile time type safety because of the same. Though ugly conversions are there just hidden
+       	// You can also have compile time type safety because of the same. 
+	// Though ugly conversions are there just hidden
 
-	val map:JsonMap = JsonObject(1 -> 2 , 3 -> JsonArray(-1.00,2.00,-3.00564,4.35656) , "hello" -> JsonBoolean(true) )
+	val map:JsonMap = JsonObject(	1 -> 2 , 3 -> JsonArray(-1.00,2.00,-3.00564,4.35656) , "
+					hello" -> JsonBoolean(true) )
     
 
         println(map)
    	
-	// A lazy stream based iterator is returned by each JsonUnit since they all implement JsonWritable interface  
+	// A lazy stream based iterator is returned by each JsonUnit 
+	// since they all implement JsonWritable interface  
         
 	val str = map.getStringStream().toList mkString ""
     
