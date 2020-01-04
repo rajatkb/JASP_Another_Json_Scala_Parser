@@ -104,6 +104,7 @@ class LexemeGenerator(tokens: => Stream[TextToken]) extends LexemeGeneratorTrait
         
         
         // Check for number
+        case (`stateS`,v) if (v == '-') => (state3,false,buffer.append(v), prevlexArray)
         case (`stateS`,v) if (v.isDigit) => (state3,false,buffer.append(v),prevlexArray)
         case (`state3`,v) if (v.isDigit) => (state3,false,buffer.append(v),prevlexArray)
         case (`state3`,v) if (v == '.') => (state4,false,buffer.append(v),prevlexArray)

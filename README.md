@@ -24,11 +24,33 @@ object Main {
        * 
        */
       
-      val map = JsonObject(1 -> JsonArray(1,2,3,"Hello",false), 
-                           3 -> JsonArray(JsonObject(1->2,3->4),3,4,"false",false))
-      println(map)
       
-      
+	val a = Logger.timer( JSON.parseFile(filename2) )
+    
+        print(a("context")("date"))
+    
+
+    	// This pretty syntax alas is only possible in Scala with tons of implicits
+       	// You can also have compile time type safety because of the same. Though ugly conversions are there just hidden
+
+	val map:JsonMap = JsonObject(1 -> 2 , 3 -> JsonArray(-1.00,2.00,-3.00564,4.35656) , "hello" -> JsonBoolean(true) )
+    
+
+        println(map)
+   	
+	// A lazy stream based iterator is returned by each JsonUnit since they all implement JsonWritable interface  
+        
+	val str = map.getStringStream().toList mkString ""
+    
+        println(str)
+    
+    	// You can also directly pass a valid string and have it parsed there itself
+        
+	val smap = JSON.parseString(str)
+    
+    	// You can now write to file
+        
+	JSON.toFile(smap, newfile)
 
    }
   
@@ -64,7 +86,7 @@ You can run the above for testing the package by changing the filename ,
 * **Create a iiterator or a stream for a walk on the JSON**: A tree structure need to be enforced in the JSON structure for it to be walked on
     The Writable iterator is a very specific usecase of the same.
 
-* ~~**Create a lazy writable iterator for the JSON objects**~~ Create a fast writer consumer for the writables.
+* ~~**Create a lazy writable iterator for the JSON objects**~~ ~~Create a fast writer consumer for the writables.~~
 
 * ~~**Turn this project into a Maven Artifact Library**~~ 
 

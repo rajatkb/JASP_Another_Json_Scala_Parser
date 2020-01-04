@@ -17,12 +17,14 @@ import com.json.traits.JsonWriteable
 object JsonObject{
   def apply(value:Map[JsonKey , JsonValue] = Map()) = new JsonObject(value)
   def apply(args:(JsonKey,JsonValue)*) = new JsonObject(args.toMap)
+  implicit def value2Map(a:JsonValue) = a match { case e:JsonObject => e; 
+                                                     case _ => throw new ClassCastException("Cannot cast "+a.getClass +" to "+this.getClass)}
 }
 
 class JsonObject(value:Map[JsonKey , JsonValue] = Map()) extends JsonMapTrait(value) {
   
   override def toString() = "{"+value.toList.map(f => f._1 + ":" + f._2).mkString(",\n")+"}"
-  override def copy(v:Any) = new JsonObject(v.asInstanceOf[Map[JsonKey,JsonValue]])
+  override def copy(v:Map[JsonKey , JsonValue]) = new JsonObject(v)
   
   
   def this(args:(JsonKey,JsonValue)* ) = this(args.toMap)

@@ -62,7 +62,7 @@ trait ParseTable extends SymbolTable {
       
       case (stackSymb,lex) if (stackSymb == lex) => stack.tail
       case _ =>try{
-        throw new IllegalStateException("expected "+stack.head+"found '"+lexeme.getValue()+"' cannot parse Json, illegal symbol at (l,c):"+lexeme.getLineNumber()+":"+lexeme.getColumnNumber())
+        throw new IllegalStateException("Look ahead or action for "+stack.head+" not found on '"+lexeme+"' cannot parse Json, illegal symbol at (l,c):"+lexeme.getLineNumber()+":"+lexeme.getColumnNumber())
       }catch{
         case e:IllegalAccessError => throw new IllegalStateException("found '"+lexeme.getSymbol()+"' cannot parse Json, illegal symbol at (l,c):"+lexeme.getLineNumber()+":"+lexeme.getColumnNumber()+"\n"+e)
       }

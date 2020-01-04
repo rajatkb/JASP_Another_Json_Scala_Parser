@@ -14,11 +14,13 @@ import com.json.traits.JsonWriteable
 
 object JsonNumber {
   def apply(value: Double) = new JsonNumber(value)
+  implicit def value2Number(a:JsonValue) = a match { case e:JsonNumber => e; 
+                                                     case _ => throw new ClassCastException("Cannot cast "+a.getClass +" to "+this.getClass)}
 }
 
 case class JsonNumber(value: Double) extends JsonNumberTrait(value) {
   override def toString() = value.toString()
-  override def copy(v: Any) = new JsonNumber(v.asInstanceOf[Double])
+  override def copy(v: Double) = new JsonNumber(v)
 
 }
 

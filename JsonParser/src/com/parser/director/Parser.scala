@@ -7,9 +7,7 @@ import com.file.tokenizer.Tokenizer
 import com.lexer.traits.LexemeGeneratorTrait
 
 class Parser(lexer:LexemeGeneratorTrait, builder:JsonBuilderTrait) extends ParseTable{
-  
-  
-   
+    
   def parse() = {
     val stack = lexer.getStream().foldLeft(List(this.S,this.STOP))((stack,lexeme) => {
       this.stackOperation(stack, lexeme , builder) 

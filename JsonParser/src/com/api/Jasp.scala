@@ -27,22 +27,39 @@ import com.json.traits.JsonFactory
 import com.json.traits.JsonMapTrait
 import com.json.traits.JsonMapTrait
 import com.json.traits.JsonFactory
+import com.json.traits.JsonNumberTrait
+import com.json.traits.JsonStringTrait
+import com.json.traits.JsonBoolTrait
+import com.json.traits.JsonMapTrait
+import com.json.traits.JsonMapTrait
+import com.json.traits.JsonListTrait
+import com.json.traits.JsonListTrait
+import com.json.traits.JsonBoolTrait
+import com.json.traits.JsonNumberTrait
+import com.json.traits.JsonStringTrait
+import java.nio.channels.FileChannel
+import java.util.RandomAccess
+import java.io.RandomAccessFile
+import java.nio.ByteBuffer
+import com.json.traits.JsonWriteable
+import java.io.BufferedOutputStream
+import java.io.FileOutputStream
 
 object Jasp {
-  
-  private val defaultInstance = JsonPrototypeFactory.getInstance(  new JsonObject(),new JsonArray(),new JsonNumber(0),new JsonString(null),new JsonBoolean(false))
+
+  private val defaultInstance = JsonPrototypeFactory.getInstance(new JsonObject(), new JsonArray(), new JsonNumber(0), new JsonString(null), new JsonBoolean(false))
 
   // THE IMPLICIT ARE ALWAYS BOUND TO THE CURRENT FACTORY OBJECT THAT CREATES THE OBJECTS BASED ON USER IMPLEMENTATION
   // OR WITH DEFAULT SUPPORTED BY THE LIBRARY
-  implicit def numtoValue(a: Double): JsonValue = JsonPrototypeFactory.getCurrentInstance().createJsonNumberEntity(a)
-  implicit def numtoKey(a: Double): JsonKey = JsonPrototypeFactory.getCurrentInstance().createJsonNumberEntity(a)
-  implicit def stringtoValue(a: String): JsonValue = JsonPrototypeFactory.getCurrentInstance().createJsonStringEntity(a)
-  implicit def stringtoKey(a: String): JsonKey = JsonPrototypeFactory.getCurrentInstance().createJsonStringEntity(a)
-  implicit def booltoKey(a: Boolean): JsonKey = JsonPrototypeFactory.getCurrentInstance().createJsonBooleanEntity(a)
-  implicit def booltoValue(a: Boolean): JsonValue = JsonPrototypeFactory.getCurrentInstance().createJsonBooleanEntity(a)
-  implicit def numtoKeyArrowAssoc(a: Double): ArrowAssoc[JsonKey] = new ArrowAssoc(a)
-  implicit def stringtoKeyArrowAssoc(a: String): ArrowAssoc[JsonKey] = new ArrowAssoc(a)
-  implicit def booleantoKeyArrowAssoc(a: Boolean): ArrowAssoc[JsonKey] = new ArrowAssoc(a)
+  implicit def num2Value(a: Double): JsonValue = JsonPrototypeFactory.getCurrentInstance().createJsonNumberEntity(a)
+  implicit def num2Key(a: Double): JsonKey = JsonPrototypeFactory.getCurrentInstance().createJsonNumberEntity(a)
+  implicit def string2Value(a: String): JsonValue = JsonPrototypeFactory.getCurrentInstance().createJsonStringEntity(a)
+  implicit def string2Key(a: String): JsonKey = JsonPrototypeFactory.getCurrentInstance().createJsonStringEntity(a)
+  implicit def bool2Key(a: Boolean): JsonKey = JsonPrototypeFactory.getCurrentInstance().createJsonBooleanEntity(a)
+  implicit def bool2Value(a: Boolean): JsonValue = JsonPrototypeFactory.getCurrentInstance().createJsonBooleanEntity(a)
+  implicit def num2KeyArrowAssoc(a: Double): ArrowAssoc[JsonKey] = new ArrowAssoc(a)
+  implicit def string2KeyArrowAssoc(a: String): ArrowAssoc[JsonKey] = new ArrowAssoc(a)
+  implicit def boolean2KeyArrowAssoc(a: Boolean): ArrowAssoc[JsonKey] = new ArrowAssoc(a)
 
   object JSON {
 
@@ -114,6 +131,19 @@ object Jasp {
         jsonBool))(fromFile)
 
     }
+
+    def toFile(jsonObject: JsonWriteable, filename: String) = {
+      try {
+        val target = new BufferedOutputStream( new FileOutputStream(filename) );
+        jsonObject.getStringStream().foreach(s => target.write(s.getBytes) )
+        target.close()
+      } catch {
+        case e: FileNotFoundException =>
+          Logger.error("File $filename not found"); throw e
+        case e: IOException => Logger.error("Something went wrong when writing file"); throw e
+      }
+    }
+
   }
 
 }
