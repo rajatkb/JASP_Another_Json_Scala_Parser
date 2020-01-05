@@ -84,6 +84,24 @@ You can run the above for testing the package by changing the filename ,
     Useful for smaller documents not so much for large docs i.e 100+mb with 1 million+ nested json entries.
     A lazy builder would not resolve the entire strcuture but only the top level strcuture. Parsing will be done
     in a on demand fashion.
+    
+	Plausible API should more or less like this
+	```scala
+	
+	val m = JSON.parsStream(streamsource)
+	
+	val m1 = m("key1")("key2")( f=> { // do something with this to be happening // return jsonValue})
+	
+	val m2 = m("key3")(0)(f => { // do something here // return jsonValue})
+	
+	JSON.toStream(m) // non blocking
+	
+	val obj:JsonObject = JSON.fromStreamJson(m2)
+	
+	JSON.toFile(m,"filename") // blocking
+	
+	
+	```
 
 * **Fix the lexer and create a less verboe and faster variant** : A possible stack based solution or a Derivative Lexer
     should be able to tackle the same
