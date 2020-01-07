@@ -77,36 +77,8 @@ You can run the above for testing the package by changing the filename ,
 
 ## TO-DO 
 
-* **Replace case classes in static stack based parser with chars[High Priority]**: Hopefully should make the processing faster. 
-    Tuple in place of case class have same performance So makes no difference.
-
-* **Create a lazy builder for JSON[Vision]** : The current builder returns a JSON by creating the entire structure. 
-    Useful for smaller documents not so much for large docs i.e 100+mb with 1 million+ nested json entries.
-    A lazy builder would not resolve the entire strcuture but only the top level strcuture. Parsing will be done
-    in a on demand fashion.
-    
-	Plausible API should more or less like this
-	```scala
-	
-	val m = JSON.parsStream(streamsource)
-	
-	val m1 = m("key1")("key2")( f=> { // do something with this to be happening // return jsonValue})
-	
-	val m2 = m("key3")(0)(f => { // do something here // return jsonValue})
-	
-	JSON.toStream(m) // non blocking
-	
-	val obj:JsonObject = JSON.fromStreamJson(m2)
-	
-	JSON.toFile(m,"filename") // blocking
-	
-	
-	```
-
-* **Fix the lexer and create a less verboe and faster variant[Needed but not immediate]** : A possible stack based solution or a Derivative Lexer
-    should be able to tackle the same
-
-* **Create a iiterator or a stream for a walk on the JSON[Needed but not immediate]**: A tree structure need to be enforced in the JSON structure for it to be walked on.The Writable iterator is a very specific usecase of the same.
+#### Check the Issues for TO-DOs .... 
+#### It's works in progress
 
 * ~~**Create a lazy writable iterator for the JSON objects**~~ ~~Create a fast writer consumer for the writables.~~
 
