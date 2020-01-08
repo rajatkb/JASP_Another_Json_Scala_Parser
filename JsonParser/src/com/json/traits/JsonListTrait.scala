@@ -12,9 +12,9 @@ abstract class JsonListTrait(value:Seq[JsonValue]) extends JsonUnit with JsonVal
    
      
   override def getStringStream() = {
-     (value.toStream.flatMap(f => Stream(",")++f.getStringStream())) match {
-       case Stream() => Stream("[")++Stream("]")
-       case v =>  Stream("[")++v.tail++Stream("]")
+     (value.toStream.flatMap(f => Stream(",") #::: f.getStringStream())) match {
+       case Stream() => Stream("[")#:::Stream("]")
+       case v =>  Stream("[")#:::v.tail#:::Stream("]")
      }
    }
 

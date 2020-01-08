@@ -13,12 +13,12 @@ abstract class JsonMapTrait(value:Map[JsonKey , JsonValue]) extends JsonUnit wit
      
     (value.toStream.flatMap(f => {
       val v = f._1 match {  case e:JsonStringTrait => e.getStringStream(); 
-                            case e => Stream("\"")++e.getStringStream()++Stream("\"") }
+                            case e => Stream("\"") #::: e.getStringStream() #::: Stream("\"") }
       
-      Stream(",")++ v ++ Stream(":")++f._2.getStringStream()}
+      Stream(",") #::: v #::: Stream(":") #::: f._2.getStringStream()}
     )) match {
-      case Stream() => Stream("{") ++ Stream("}")
-      case v => Stream("{")++v.tail++Stream("}")
+      case Stream() => Stream("{") #::: Stream("}")
+      case v => Stream("{") #::: v.tail #::: Stream("}")
     }
     
   }

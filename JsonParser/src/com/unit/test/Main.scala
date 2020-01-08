@@ -17,7 +17,7 @@ import com.json.traits.JsonStringTrait
  *
  * Further work
  *
- * 1. Write a Iterator writer method Print method or write method must case the string of number , string, bool with "" when in key position
+ * 
  * 1.1 The above should also work as a pretty print but that's a later concern
  * 2. Add the map and array operators to the interface of map and arrays
  * 3. Write a lazy version of the Json Objects and arrays and numbers etc.
@@ -46,12 +46,8 @@ object Main {
     
     val smap = JSON.parseString(str)
     
-    
-    
     JSON.toFile(smap, newfile)
-    
-
-
+   
   }
 
 }
