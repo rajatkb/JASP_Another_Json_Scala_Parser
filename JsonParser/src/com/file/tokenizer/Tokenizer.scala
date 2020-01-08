@@ -9,7 +9,7 @@ import scala.io.BufferedSource
 
 class Tokenizer(file:Source) {
   
-  def getStream() = file.getLines().toStream
+  def getStream() = file.getLines()
                           .zipWithIndex
                           .flatMap {
                               case (line,lineNumber) => {

@@ -10,11 +10,6 @@ import com.json.basic.JsonNumber
 import com.json.basic.JsonString
 import com.json.basic.JsonBoolean
 import com.json.factory.JsonPrototypeFactory
-import com.json.traits.JsonMapTrait
-import com.json.traits.JsonListTrait
-import com.json.traits.JsonNumberTrait
-import com.json.traits.JsonStringTrait
-import com.json.traits.JsonBoolTrait
 import com.json.traits.JsonValue
 import com.json.traits.JsonKey
 import java.io.IOException
@@ -27,12 +22,7 @@ import com.json.traits.JsonFactory
 import com.json.traits.JsonMapTrait
 import com.json.traits.JsonMapTrait
 import com.json.traits.JsonFactory
-import com.json.traits.JsonNumberTrait
-import com.json.traits.JsonStringTrait
-import com.json.traits.JsonBoolTrait
 import com.json.traits.JsonMapTrait
-import com.json.traits.JsonMapTrait
-import com.json.traits.JsonListTrait
 import com.json.traits.JsonListTrait
 import com.json.traits.JsonBoolTrait
 import com.json.traits.JsonNumberTrait
@@ -47,6 +37,9 @@ import java.io.FileOutputStream
 import com.json.builder.JsonIteratorBuilderV2
 import com.json.traits.JsonBuilderTrait
 import com.lexer.traits.LexemeGeneratorTrait
+import java.nio.file.Files
+import java.nio.file.Paths
+
 
 object Jasp {
 
@@ -69,11 +62,27 @@ object Jasp {
   implicit def num2KeyArrowAssoc(a: Double): ArrowAssoc[JsonKey] = new ArrowAssoc(a)
   implicit def string2KeyArrowAssoc(a: String): ArrowAssoc[JsonKey] = new ArrowAssoc(a)
   implicit def boolean2KeyArrowAssoc(a: Boolean): ArrowAssoc[JsonKey] = new ArrowAssoc(a)
+  
+  
+  
+  // A minimal Source implementation with close and getLines implemented
+  private class NioSource(src:String) extends Source {
+    val iter = null
+    val file = Files.lines(Paths.get(src))
+    val stream= file.iterator()
+    
+    override def getLines() = new Iterator[String] {
+      override def hasNext() = stream.hasNext()
+      override def next() = stream.next()
+    } 
+    override def close() = file.close()
+  }
+  
 
   object JSON {
 
-    val fromFile = (a: String) => Source.fromFile(a)
-    val fromString = (a: String) => Source.fromString(a)
+    private val fromFile = (a: String) => new NioSource(a)
+    private val fromString = (a: String) => Source.fromString(a)
 
     private def parseWith(tokenizer: Tokenizer, jsonFactory: JsonFactory) = {
       val lexer = new LexemeGenerator(tokenizer.getStream())
