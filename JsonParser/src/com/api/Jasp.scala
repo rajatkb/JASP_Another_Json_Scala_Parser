@@ -52,7 +52,7 @@ object Jasp {
 
   private val defaultInstance = JsonPrototypeFactory.getInstance(new JsonObject(), new JsonArray(), new JsonNumber(0), new JsonString(null), new JsonBoolean(false))
 
-  private def getDefaultJsonBuilder = (factory:JsonFactory) => new JsonIteratorBuilderV2(factory)
+  private def getDefaultJsonBuilder = (factory:JsonFactory) => new JsonIteratorBuilder(factory)
   private def getDefaultTokenizer = (src:Source) => new Tokenizer(src)
   private def getDefaultParser = (t:LexemeGeneratorTrait ,f:JsonBuilderTrait ) => new Parser(t , f)
   

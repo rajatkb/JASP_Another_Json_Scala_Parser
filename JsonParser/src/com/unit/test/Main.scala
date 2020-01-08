@@ -32,9 +32,9 @@ object Main {
     val filename2 = "E://Project Work//JASP_Another_Json_Scala_Parser//JsonParser//test.json"
     val newfile = "E://Project Work//JASP_Another_Json_Scala_Parser//JsonParser//newfile.json"
     
-    val a = Logger.timer( JSON.parseFile(filename2) )
+    val a = Logger.timer( JSON.parseFile(filename) )
     
-    print(a("context")("date"))
+//    print(a("context")("date"))
     
     val map = JsonObject(1 -> 2 , 3 -> JsonArray(-1.00,2.00,-3.00564,4.35656) , "hello" -> JsonBoolean(true) )
     

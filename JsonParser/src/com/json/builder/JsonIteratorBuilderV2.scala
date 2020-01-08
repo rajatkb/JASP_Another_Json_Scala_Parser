@@ -12,6 +12,10 @@ import com.json.traits.JsonMapTrait
 import com.json.traits.JsonListTrait
 import com.json.traits.JsonBuilderTrait
 
+/**
+ * This was supposed to be a better performing version, turns out it's the other way round.
+ * Native comparisons did not helped at all
+ */
 class JsonIteratorBuilderV2(factory:JsonFactory) extends JsonBuilderTrait(factory)  {
   
   // Light weight Stack implementation
