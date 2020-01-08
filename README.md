@@ -1,4 +1,6 @@
 # JASP_Another_Json_Scala_Parser
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dwyl/esta/issues)  
+
 It's a Scala Json parser. It parses JSON, and create Map , Arrays and String and Numbers and Booleans embedded in them. It' supposed to be functional in nature, so no mutation. Also it's to support streaming which is work progress, getting immutability and streaming is a tough nut to work out together.  
 
 ## How to use ?
@@ -75,19 +77,8 @@ You can run the above for testing the package by changing the filename ,
 
 ## TO-DO 
 
-* **Replace case classes in static stack based parser with chars**: Hopefully should make the processing faster. 
-    Tuple in place of case class have same performance So makes no difference.
-
-* **Create a lazy builder for JSON** : The current builder returns a JSON by creating the entire structure. 
-    Useful for smaller documents not so much for large docs i.e 100+mb with 1 million+ nested json entries.
-    A lazy builder would not resolve the entire strcuture but only the top level strcuture. Parsing will be done
-    in a on demand fashion.
-
-* **Fix the lexer and create a less verboe and faster variant** : A possible stack based solution or a Derivative Lexer
-    should be able to tackle the same
-
-* **Create a iiterator or a stream for a walk on the JSON**: A tree structure need to be enforced in the JSON structure for it to be walked on
-    The Writable iterator is a very specific usecase of the same.
+#### Check the Issues for TO-DOs .... 
+#### It's works in progress
 
 * ~~**Create a lazy writable iterator for the JSON objects**~~ ~~Create a fast writer consumer for the writables.~~
 
@@ -98,7 +89,8 @@ You can run the above for testing the package by changing the filename ,
 ## How to Contribute
 * Just move to the com.unit.test package. then move to Object JSON. From there on you can follow the code
 * Parser is built with a builder pattern and objects are initialised using Prototypes of their instance
-* The idea was to program using interfaces. The only place InstanceOf was used in the prototype copy method. (Need working out)  
+* The idea was to program using interfaces. The only place InstanceOf was used in the prototype copy method. ~~(Need working out)~~
+* Create pull request against one of the To-Dos, or maybe add your own issue and also do post some test case for same in a sepparate unit test if you can.
 
 
 Thanks for checking out ! If you find this educational , useful for your project or easy to use API leave a star.
