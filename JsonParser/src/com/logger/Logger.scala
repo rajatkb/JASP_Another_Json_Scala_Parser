@@ -19,4 +19,17 @@ object Logger {
     else
       block
   }
+  
+  def time[R](block: => R): Double = {
+    if(timing) {
+          val t0 = System.nanoTime()
+          val result = block    // call-by-name
+          val t1 = System.nanoTime()
+          (t1 - t0).toFloat/1000000000
+      }
+    else
+      0
+  }
+  
+  
 }

@@ -44,11 +44,20 @@ import java.nio.ByteBuffer
 import com.json.traits.JsonWriteable
 import java.io.BufferedOutputStream
 import java.io.FileOutputStream
+import com.json.builder.JsonIteratorBuilderV2
+import com.json.traits.JsonBuilderTrait
+import com.lexer.traits.LexemeGeneratorTrait
 
 object Jasp {
 
   private val defaultInstance = JsonPrototypeFactory.getInstance(new JsonObject(), new JsonArray(), new JsonNumber(0), new JsonString(null), new JsonBoolean(false))
 
+  private def getDefaultJsonBuilder = (factory:JsonFactory) => new JsonIteratorBuilderV2(factory)
+  private def getDefaultTokenizer = (src:Source) => new Tokenizer(src)
+  private def getDefaultParser = (t:LexemeGeneratorTrait ,f:JsonBuilderTrait ) => new Parser(t , f)
+  
+  
+  
   // THE IMPLICIT ARE ALWAYS BOUND TO THE CURRENT FACTORY OBJECT THAT CREATES THE OBJECTS BASED ON USER IMPLEMENTATION
   // OR WITH DEFAULT SUPPORTED BY THE LIBRARY
   implicit def num2Value(a: Double): JsonValue = JsonPrototypeFactory.getCurrentInstance().createJsonNumberEntity(a)
@@ -68,8 +77,8 @@ object Jasp {
 
     private def parseWith(tokenizer: Tokenizer, jsonFactory: JsonFactory) = {
       val lexer = new LexemeGenerator(tokenizer.getStream())
-      val builder = new JsonIteratorBuilder(jsonFactory)
-      val parser = new Parser(lexer, builder)
+      val builder = getDefaultJsonBuilder(jsonFactory)
+      val parser = getDefaultParser(lexer , builder)
       val value = parser.parse()
       value
     }
@@ -77,7 +86,7 @@ object Jasp {
     private def parseWithAutoclose(filename: String, jsonFactory: JsonFactory)(op: String => Source) = {
       Try(op(filename)) match {
         case Success(fileBufferSource) => {
-          val tokenizer = new Tokenizer(fileBufferSource)
+          val tokenizer = getDefaultTokenizer(fileBufferSource)
           val value = parseWith(tokenizer, jsonFactory)
           fileBufferSource.close()
           value

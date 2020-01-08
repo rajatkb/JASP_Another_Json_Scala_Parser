@@ -9,11 +9,11 @@ import scala.io.BufferedSource
 
 class Tokenizer(file:Source) {
   
-  def getStream() = file.getLines().toStream
+  def getStream() = file.getLines().toStream.view
                           .zipWithIndex
                           .flatMap {
                               case (line,lineNumber) => {
-                                (line+"\n").zipWithIndex.map {
+                                (line+"\n").view.zipWithIndex.map {
                                   case (char,columnNumber) => new TextToken(char,lineNumber+1,columnNumber+1)
                                 }
                               }  
