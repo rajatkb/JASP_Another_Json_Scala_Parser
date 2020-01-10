@@ -20,7 +20,7 @@ object Main {
       val filename2 = "E://Project Work//JASP_Another_Json_Scala_Parser//JsonParser//test.json" 
 //      val a = Logger.timer( JSON.parseFile(filename) )
       /**
-       * Benchmark with citylots.json : Elapsed time: 227.2318s
+       * Benchmark with citylots.json : Elapsed time: 220s
        * More optimization needed, need to reduce it under a second
        * 
        * 
