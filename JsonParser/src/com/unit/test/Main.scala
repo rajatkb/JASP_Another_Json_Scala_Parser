@@ -32,7 +32,7 @@ object Main {
     val filename2 = "E://Project Work//JASP_Another_Json_Scala_Parser//JsonParser//test.json"
     val newfile = "E://Project Work//JASP_Another_Json_Scala_Parser//JsonParser//newfile.json"
     
-    val a = Logger.timer( JSON.parseFile(filename) )
+    val a = Logger.timer( JSON.parseFile(filename2) )
     
 //    print(a("context")("date"))
     

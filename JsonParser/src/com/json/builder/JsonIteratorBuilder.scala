@@ -47,52 +47,52 @@ class JsonIteratorBuilder(factory: JsonFactory) extends JsonBuilderTrait(factory
 
   abstract class TokenElement {}
 
-  case class S() extends TokenElement
+  private case object S extends TokenElement
 
-  case class P() extends TokenElement
+  private case object P extends TokenElement
 
-  case class Kn(num: Double) extends TokenElement
+  private case class Kn(num: Double) extends TokenElement
 
-  case class Ks(str: String) extends TokenElement
+  private case class Ks(str: String) extends TokenElement
   
-  case class Kb(b:Boolean) extends TokenElement
+  private case class Kb(b:Boolean) extends TokenElement
 
-  case class Vs(str: String) extends TokenElement
+  private case class Vs(str: String) extends TokenElement
 
-  case class Vn(num: Double) extends TokenElement
+  private case class Vn(num: Double) extends TokenElement
   
-  case class Vb(b:Boolean) extends TokenElement
+  private case class Vb(b:Boolean) extends TokenElement
 
-  case class L() extends TokenElement
+  private case object L extends TokenElement
 
-  case class A() extends TokenElement
+  private case object A extends TokenElement
 
-  case class VAV() extends TokenElement // array value evaluated
+  private case object VAV extends TokenElement // array value evaluated
 
-  case class VAS() extends TokenElement // array value start
+  private case object VAS extends TokenElement // array value start
 
-  case class VAE() extends TokenElement // array value end
+  private case object VAE extends TokenElement // array value end
 
-  case class VSS() extends TokenElement // json map start
+  private case object VSS extends TokenElement // json map start
 
-  case class VSE() extends TokenElement // json map end
+  private case object VSE extends TokenElement // json map end
 
-  case class VSV() extends TokenElement // json value evaluated
+  private case object VSV extends TokenElement // json value evaluated
 
-  val s: S = new S()
-  override def pushS() = stack = s :: stack
 
-  val p: P = new P()
-  override def pushP() = stack = p :: stack
+  override def pushS() = stack = S :: stack
 
-  val l: L = new L()
-  override def pushL() = stack = l :: stack
+ 
+  override def pushP() = stack = P :: stack
 
-  val a: A = new A()
-  override def pushA() = stack = a :: stack
+ 
+  override def pushL() = stack = L :: stack
 
-  val vas: VAS = new VAS()
-  override def pushVAS() = stack = vas :: stack
+ 
+  override def pushA() = stack = A :: stack
+
+ 
+  override def pushVAS() = stack = VAS :: stack
 
 
   override def pushVAE() = {
@@ -108,7 +108,7 @@ class JsonIteratorBuilder(factory: JsonFactory) extends JsonBuilderTrait(factory
   /**
    * This function handles nested Arrays and JsonMaps that are already in the stack
    */
-  private val vav: VAV = new VAV()
+
   private var subJsonArrayStack: List[JsonListTrait] = Nil
   @tailrec
   private def createArray(tempValue: JsonValue, tempA: JsonListTrait, stack: List[TokenElement]): (JsonListTrait, List[TokenElement]) = {
@@ -117,23 +117,23 @@ class JsonIteratorBuilder(factory: JsonFactory) extends JsonBuilderTrait(factory
       case Vs(str: String) => createArray(factory.createJsonStringEntity(str), tempA, stack.tail)
       case Vn(num: Double) => createArray(factory.createJsonNumberEntity(num), tempA, stack.tail)
       case Vb(b) => createArray(factory.createJsonBooleanEntity(b), tempA, stack.tail)
-      case A() => createArray(null, constructA(tempValue, tempA), stack.tail)
-      case VSV() => {
+      case A => createArray(null, constructA(tempValue, tempA), stack.tail)
+      case VSV => {
         val subJsonMapStackHead = subJsonMapStack.head
         subJsonMapStack = subJsonMapStack.tail
         createArray(subJsonMapStackHead, tempA, stack.tail)
       }
-      case VAV() => {
+      case VAV => {
         val subJsonArrayHead = subJsonArrayStack.head
         subJsonArrayStack = subJsonArrayStack.tail
         createArray(subJsonArrayHead, tempA, stack.tail)
       }
-      case VAS() => (tempA, vav :: stack.tail)
+      case VAS => (tempA, VAV :: stack.tail)
     }
   }
 
-  val vss: VSS = new VSS()
-  override def pushVSS() = stack = vss :: stack
+
+  override def pushVSS() = stack = VSS :: stack
 
   override def pushVSE() = {
 
@@ -145,7 +145,7 @@ class JsonIteratorBuilder(factory: JsonFactory) extends JsonBuilderTrait(factory
     this.stack = tst
   }
 
-  private val vsv: VSV = new VSV()
+
   private var subJsonMapStack: List[JsonMapTrait] = Nil
   @tailrec
   private def visitNode(tempS: JsonMapTrait, tempP: (JsonKey, JsonValue),
@@ -160,16 +160,16 @@ class JsonIteratorBuilder(factory: JsonFactory) extends JsonBuilderTrait(factory
         case Vs(null) => visitNode(tempS, tempP, tempL, tempKey, factory.createJsonStringEntity(null), stack.tail)
         case Vn(num: Double) => visitNode(tempS, tempP, tempL, tempKey, factory.createJsonNumberEntity(num), stack.tail)
         case Vb(b) => visitNode(tempS, tempP, tempL, tempKey, factory.createJsonBooleanEntity(b), stack.tail)
-        case P() => visitNode(tempS, (tempKey, tempValue), tempL, null, null, stack.tail)
-        case L() => visitNode(tempS, null, (constructL(tempP, tempL)), tempKey, tempValue, stack.tail)
-        case S() => visitNode((constructS(tempP, tempL)), null, null, tempKey, tempValue, stack.tail)
-        case VSS() => (tempS, vsv :: stack.tail)
-        case VSV() => {
+        case P => visitNode(tempS, (tempKey, tempValue), tempL, null, null, stack.tail)
+        case L => visitNode(tempS, null, (constructL(tempP, tempL)), tempKey, tempValue, stack.tail)
+        case S => visitNode((constructS(tempP, tempL)), null, null, tempKey, tempValue, stack.tail)
+        case VSS => (tempS, VSV :: stack.tail)
+        case VSV => {
           val subJsonMapStackHead = subJsonMapStack.head
           subJsonMapStack = subJsonMapStack.tail
           visitNode(tempS, tempP, tempL, tempKey, subJsonMapStackHead, stack.tail)
         }
-        case VAV() => {
+        case VAV => {
           val subJsonArrayHead = subJsonArrayStack.head;
           subJsonArrayStack = subJsonArrayStack.tail
           visitNode(tempS, tempP, tempL, tempKey, subJsonArrayHead, stack.tail)
