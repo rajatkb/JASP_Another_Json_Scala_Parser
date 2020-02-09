@@ -1,6 +1,6 @@
 package com.json.traits
 
-abstract class JsonBuilderTrait(factory:JsonFactory) {
+abstract class JsonBuilder(factory:JsonFactory) {
   
 
   def pushS()
@@ -17,5 +17,5 @@ abstract class JsonBuilderTrait(factory:JsonFactory) {
   def pushV(num: Double)
   def pushK(b:Boolean)
   def pushV(b:Boolean)
-  def build():JsonMapTrait
+  def build():JsonMap
 }

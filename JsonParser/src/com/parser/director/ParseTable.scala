@@ -3,7 +3,7 @@ package com.parser.director
 import scala.annotation.tailrec
 import com.lexer.traits.Lexeme
 import com.lexer.traits.SymbolTable
-import com.json.traits.JsonBuilderTrait
+import com.json.traits.JsonBuilder
 import com.logger.Logger
 
 trait ParseTable extends SymbolTable {
@@ -19,7 +19,7 @@ trait ParseTable extends SymbolTable {
   val STOP = '$'
    
   
-  @tailrec final def stackOperation(stack:List[Char],lexeme:Lexeme , builder:JsonBuilderTrait):List[Char] = {
+  @tailrec final def stackOperation(stack:List[Char],lexeme:Lexeme , builder:JsonBuilder):List[Char] = {
     
     (stack.head , lexeme.getSymbol()) match {
       case(`S`,`OPENBRACE`) =>  builder.pushS() ;stackOperation(List(OPENBRACE,B,CLOSEBRACE):::stack.tail, lexeme , builder)

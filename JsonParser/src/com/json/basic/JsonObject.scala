@@ -4,7 +4,7 @@ package com.json.basic
 import com.json.traits.JsonUnit
 import com.json.traits.JsonValue
 import com.json.traits.JsonKey
-import com.json.traits.JsonMapTrait
+import com.json.traits.JsonMap
 import com.json.traits.JsonValue
 import com.json.traits.JsonWriteable
 
@@ -17,15 +17,12 @@ import com.json.traits.JsonWriteable
 object JsonObject{
   def apply(value:Map[JsonKey , JsonValue] = Map()) = new JsonObject(value)
   def apply(args:(JsonKey,JsonValue)*) = new JsonObject(args.toMap)
-  implicit def value2Map(a:JsonValue) = a match { case e:JsonObject => e; 
-                                                     case _ => throw new ClassCastException("Cannot cast "+a.getClass +" to "+this.getClass)}
+  implicit def value2Map(a:JsonValue) = a.asInstanceOf[JsonObject]
 }
 
-class JsonObject(value:Map[JsonKey , JsonValue] = Map()) extends JsonMapTrait(value) {
+class JsonObject(value:Map[JsonKey , JsonValue] = Map()) extends JsonMap(value) {
   
   override def toString() = "{"+value.toList.map(f => f._1 + ":" + f._2).mkString(",\n")+"}"
-  override def copy(v:Map[JsonKey , JsonValue]) = new JsonObject(v)
-  
   
   def this(args:(JsonKey,JsonValue)* ) = this(args.toMap)
  

@@ -2,14 +2,12 @@ package com.json.builder
 
 import com.json.traits.JsonFactory
 import com.json.traits.JsonUnit
-import com.json.traits.JsonKey
 import com.json.traits.JsonValue
-import com.json.traits.JsonMapTrait
+import com.json.traits.JsonMap
 import scala.annotation.tailrec
 import com.json.traits.JsonKey
-import com.json.traits.JsonMapTrait
-import com.json.traits.JsonListTrait
-import com.json.traits.JsonBuilderTrait
+import com.json.traits.JsonBuilder
+import com.json.traits.JsonList
 
 /**
  *
@@ -41,7 +39,7 @@ import com.json.traits.JsonBuilderTrait
  * 
  */
 
-class JsonIteratorBuilder(factory: JsonFactory) extends JsonBuilderTrait(factory) {
+class JsonIteratorBuilder(factory: JsonFactory) extends JsonBuilder(factory) {
 
   private var stack: List[TokenElement] = Nil
 
@@ -109,9 +107,9 @@ class JsonIteratorBuilder(factory: JsonFactory) extends JsonBuilderTrait(factory
    * This function handles nested Arrays and JsonMaps that are already in the stack
    */
 
-  private var subJsonArrayStack: List[JsonListTrait] = Nil
+  private var subJsonArrayStack: List[JsonList] = Nil
   @tailrec
-  private def createArray(tempValue: JsonValue, tempA: JsonListTrait, stack: List[TokenElement]): (JsonListTrait, List[TokenElement]) = {
+  private def createArray(tempValue: JsonValue, tempA: JsonList, stack: List[TokenElement]): (JsonList, List[TokenElement]) = {
     stack.head match {
       case Vs(null) => createArray(factory.createJsonStringEntity(null), tempA, stack.tail)
       case Vs(str: String) => createArray(factory.createJsonStringEntity(str), tempA, stack.tail)
@@ -146,10 +144,10 @@ class JsonIteratorBuilder(factory: JsonFactory) extends JsonBuilderTrait(factory
   }
 
 
-  private var subJsonMapStack: List[JsonMapTrait] = Nil
+  private var subJsonMapStack: List[JsonMap] = Nil
   @tailrec
-  private def visitNode(tempS: JsonMapTrait, tempP: (JsonKey, JsonValue),
-    tempL: List[(JsonKey, JsonValue)], tempKey: JsonKey, tempValue: JsonValue, stack: List[TokenElement]): (JsonMapTrait, List[TokenElement]) = {
+  private def visitNode(tempS: JsonMap, tempP: (JsonKey, JsonValue),
+    tempL: List[(JsonKey, JsonValue)], tempKey: JsonKey, tempValue: JsonValue, stack: List[TokenElement]): (JsonMap, List[TokenElement]) = {
     stack match {
       case Nil => (tempS, Nil)
       case _ => stack.head match {
@@ -204,7 +202,7 @@ class JsonIteratorBuilder(factory: JsonFactory) extends JsonBuilderTrait(factory
   /**
    * construction rule for S -> (P L)
    */
-  private def constructS(tempP: (JsonKey, JsonValue), tempL: List[(JsonKey, JsonValue)]): JsonMapTrait = (tempP, tempL) match {
+  private def constructS(tempP: (JsonKey, JsonValue), tempL: List[(JsonKey, JsonValue)]): JsonMap = (tempP, tempL) match {
     case (null, null) => factory.createJsonMap(Map())
     case (null, Nil) => factory.createJsonMap(Map())
     case (_, _) => factory.createJsonMap((tempP :: tempL).toMap)
@@ -212,7 +210,7 @@ class JsonIteratorBuilder(factory: JsonFactory) extends JsonBuilderTrait(factory
   /**
    * construction rule for A -> (V L)
    */
-  private def constructA(tempV: JsonValue, tempA: JsonListTrait) = (tempV, tempA) match {
+  private def constructA(tempV: JsonValue, tempA: JsonList) = (tempV, tempA) match {
     case (null, null) => factory.createJsonList(Nil)
     case (_, null) => factory.createJsonList(tempV :: List[JsonValue]())
     case (_, _) => factory.createJsonList(tempV :: List[JsonValue]() ++ tempA.getValue())
@@ -223,7 +221,7 @@ class JsonIteratorBuilder(factory: JsonFactory) extends JsonBuilderTrait(factory
    * Traverse the stack from top to bottom and build the
    * Json
    */
-  override def build(): JsonMapTrait = {
+  override def build(): JsonMap = {
     if (subJsonMapStack == Nil)
       throw new IllegalStateException("Wrong sequence of builder.push() called, JsonMapStack can never be emprty !")
     subJsonMapStack.head

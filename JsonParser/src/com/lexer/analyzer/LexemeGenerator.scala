@@ -26,7 +26,7 @@ class LexemeGenerator(tokens: => Stream[TextToken]) extends LexemeGeneratorTrait
 
         
     
-     override def getStream() = tokens.scanLeft((stateS,false,new StringBuilder("") , Array[Lexeme](null,null)))((acc,token) => {
+    override def getStream() = tokens.scanLeft((stateS,false,new StringBuilder("") , Array[Lexeme](null,null)))((acc,token) => {
       
 
       

@@ -1,12 +1,11 @@
 package com.parser.director
 
 import com.lexer.analyzer.LexemeGenerator
-import com.json.traits.JsonBuilderTrait
-import com.json.traits.JsonMapTrait
+import com.json.traits.JsonBuilder
 import com.file.tokenizer.Tokenizer
 import com.lexer.traits.LexemeGeneratorTrait
 
-class Parser(lexer:LexemeGeneratorTrait, builder:JsonBuilderTrait) extends ParseTable{
+class Parser(lexer:LexemeGeneratorTrait, builder:JsonBuilder) extends ParseTable{
     
   def parse() = {
     val stack = lexer.getStream().foldLeft(List(this.S,this.STOP))((stack,lexeme) => {

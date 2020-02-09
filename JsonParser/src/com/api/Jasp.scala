@@ -9,8 +9,8 @@ import com.json.basic.JsonArray
 import com.json.basic.JsonNumber
 import com.json.basic.JsonString
 import com.json.basic.JsonBoolean
-import com.json.factory.JsonPrototypeFactory
 import com.json.traits.JsonValue
+import com.json.basic.JsonDefaultFactory
 import com.json.traits.JsonKey
 import java.io.IOException
 import java.io.FileNotFoundException
@@ -18,15 +18,11 @@ import scala.io.Source
 import com.logger.Logger
 import scala.util.{ Try, Success, Failure }
 import scala.io.BufferedSource
-import com.json.traits.JsonFactory
-import com.json.traits.JsonMapTrait
-import com.json.traits.JsonMapTrait
-import com.json.traits.JsonFactory
-import com.json.traits.JsonMapTrait
-import com.json.traits.JsonListTrait
-import com.json.traits.JsonBoolTrait
-import com.json.traits.JsonNumberTrait
-import com.json.traits.JsonStringTrait
+import com.json.traits.JsonMap
+import com.json.traits.JsonList
+import com.json.traits.JsonBool
+import com.json.traits.JsonNumeric
+import com.json.traits.JsonChars
 import java.nio.channels.FileChannel
 import java.util.RandomAccess
 import java.io.RandomAccessFile
@@ -35,34 +31,36 @@ import com.json.traits.JsonWriteable
 import java.io.BufferedOutputStream
 import java.io.FileOutputStream
 import com.json.builder.JsonIteratorBuilderV2
-import com.json.traits.JsonBuilderTrait
+import com.json.traits.JsonBuilder
 import com.lexer.traits.LexemeGeneratorTrait
 import java.nio.file.Files
 import java.nio.file.Paths
+import com.json.traits.JsonFactory
+
 
 
 object Jasp {
 
-  private val defaultInstance = JsonPrototypeFactory.getInstance(new JsonObject(), new JsonArray(), new JsonNumber(0), new JsonString(null), new JsonBoolean(false))
-
+  
+  
+  
+  
   private def getDefaultJsonBuilder = (factory:JsonFactory) => new JsonIteratorBuilder(factory)
   private def getDefaultTokenizer = (src:Source) => new Tokenizer(src)
-  private def getDefaultParser = (t:LexemeGeneratorTrait ,f:JsonBuilderTrait ) => new Parser(t , f)
+  private def getDefaultParser = (t:LexemeGeneratorTrait ,f:JsonBuilder ) => new Parser(t , f)
   
   
   
-  // THE IMPLICIT ARE ALWAYS BOUND TO THE CURRENT FACTORY OBJECT THAT CREATES THE OBJECTS BASED ON USER IMPLEMENTATION
-  // OR WITH DEFAULT SUPPORTED BY THE LIBRARY
-  implicit def num2Value(a: Double): JsonValue = JsonPrototypeFactory.getCurrentInstance().createJsonNumberEntity(a)
-  implicit def num2Key(a: Double): JsonKey = JsonPrototypeFactory.getCurrentInstance().createJsonNumberEntity(a)
-  implicit def string2Value(a: String): JsonValue = JsonPrototypeFactory.getCurrentInstance().createJsonStringEntity(a)
-  implicit def string2Key(a: String): JsonKey = JsonPrototypeFactory.getCurrentInstance().createJsonStringEntity(a)
-  implicit def bool2Key(a: Boolean): JsonKey = JsonPrototypeFactory.getCurrentInstance().createJsonBooleanEntity(a)
-  implicit def bool2Value(a: Boolean): JsonValue = JsonPrototypeFactory.getCurrentInstance().createJsonBooleanEntity(a)
+  // THE IMPLICIT ARE ALWAYS BOUND TO THE DEFAULT INSTANCE OF FACTORY
+  implicit def num2Value(a: Double): JsonValue = JsonDefaultFactory.createJsonNumberEntity(a)
+  implicit def num2Key(a: Double): JsonKey = JsonDefaultFactory.createJsonNumberEntity(a)
+  implicit def string2Value(a: String): JsonValue = JsonDefaultFactory.createJsonStringEntity(a)
+  implicit def string2Key(a: String): JsonKey = JsonDefaultFactory.createJsonStringEntity(a)
+  implicit def bool2Key(a: Boolean): JsonKey = JsonDefaultFactory.createJsonBooleanEntity(a)
+  implicit def bool2Value(a: Boolean): JsonValue = JsonDefaultFactory.createJsonBooleanEntity(a)
   implicit def num2KeyArrowAssoc(a: Double): ArrowAssoc[JsonKey] = new ArrowAssoc(a)
   implicit def string2KeyArrowAssoc(a: String): ArrowAssoc[JsonKey] = new ArrowAssoc(a)
   implicit def boolean2KeyArrowAssoc(a: Boolean): ArrowAssoc[JsonKey] = new ArrowAssoc(a)
-  
   
   
   // A minimal Source implementation with close and getLines implemented
@@ -79,6 +77,7 @@ object Jasp {
   }
   
 
+  
   object JSON {
 
     private val fromFile = (a: String) => new NioSource(a)
@@ -92,8 +91,8 @@ object Jasp {
       value
     }
 
-    private def parseWithAutoclose(filename: String, jsonFactory: JsonFactory)(op: String => Source) = {
-      Try(op(filename)) match {
+    private def parseWithAutoclose(filename: String)(readFrom: String => Source)(implicit jsonFactory: JsonFactory) = {
+      Try(readFrom(filename)) match {
         case Success(fileBufferSource) => {
           val tokenizer = getDefaultTokenizer(fileBufferSource)
           val value = parseWith(tokenizer, jsonFactory)
@@ -110,50 +109,32 @@ object Jasp {
       }
     }
 
-    def parseString(data: String): JsonMapTrait = {
-      parseWithAutoclose(data, defaultInstance)(fromString)
+    def parseString(data: String): JsonMap = {
+      parseWithAutoclose(data)(fromString)(JsonDefaultFactory)
     }
 
-    def parseString(
-      data: String,
-      jsonMap: JsonMapTrait, jsonList: JsonListTrait,
-      jsonNumber: JsonNumberTrait, jsonString: JsonStringTrait,
-      jsonBool: JsonBoolTrait) = {
+    def parseString( data: String, factoryInstance: JsonFactory  ) = {
 
-      parseWithAutoclose(data, JsonPrototypeFactory.getInstance(
-        jsonMap,
-        jsonList,
-        jsonNumber,
-        jsonString,
-        jsonBool))(fromString)
+      parseWithAutoclose(data)(fromString)(factoryInstance)
 
     }
 
-    def parseFile(filename: String): JsonMapTrait = {
+    def parseFile(filename: String): JsonMap = {
 
-      parseWithAutoclose(filename, defaultInstance)(fromFile)
+      parseWithAutoclose(filename)(fromFile)(JsonDefaultFactory)
 
     }
 
-    def parseFile(
-      filename: String,
-      jsonMap: JsonMapTrait, jsonList: JsonListTrait,
-      jsonNumber: JsonNumberTrait, jsonString: JsonStringTrait,
-      jsonBool: JsonBoolTrait) = {
+    def parseFile(filename: String, factoryInstance: JsonFactory) = {
 
-      parseWithAutoclose(filename, JsonPrototypeFactory.getInstance(
-        jsonMap,
-        jsonList,
-        jsonNumber,
-        jsonString,
-        jsonBool))(fromFile)
+      parseWithAutoclose(filename)(fromFile)(factoryInstance)
 
     }
 
     def toFile(jsonObject: JsonWriteable, filename: String) = {
       try {
         val target = new BufferedOutputStream( new FileOutputStream(filename) );
-        jsonObject.getStringStream().foreach(s => target.write(s.getBytes) )
+        jsonObject.toStream().foreach(s => target.write(s.getBytes))
         target.close()
       } catch {
         case e: FileNotFoundException =>

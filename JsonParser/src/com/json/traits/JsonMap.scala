@@ -1,21 +1,20 @@
 package com.json.traits
 //import scala.collection.mutable.HashMap
 
-abstract class JsonMapTrait(value:Map[JsonKey , JsonValue]) extends JsonUnit with JsonValue {
+abstract class JsonMap(value:Map[JsonKey , JsonValue]) extends JsonUnit with JsonValue {
   
-  def copy(a:Map[JsonKey , JsonValue]):JsonMapTrait
   
   override def apply(key:JsonKey) = value.get(key).getOrElse(null)
   
   override def getValue():Map[JsonKey,JsonValue] = value 
   
-  override def getStringStream() = {
+  override def toStream() = {
      
     (value.toStream.flatMap(f => {
-      val v = f._1 match {  case e:JsonStringTrait => e.getStringStream(); 
-                            case e => Stream("\"") #::: e.getStringStream() #::: Stream("\"") }
+      val v = f._1 match {  case e:JsonChars => e.toStream(); 
+                            case e => Stream("\"") #::: e.toStream() #::: Stream("\"") }
       
-      Stream(",") #::: v #::: Stream(":") #::: f._2.getStringStream()}
+      Stream(",") #::: v #::: Stream(":") #::: f._2.toStream()}
     )) match {
       case Stream() => Stream("{") #::: Stream("}")
       case v => Stream("{") #::: v.tail #::: Stream("}")
@@ -28,7 +27,7 @@ abstract class JsonMapTrait(value:Map[JsonKey , JsonValue]) extends JsonUnit wit
 }
 
 
-object JsonMapTrait {
-  implicit def value2Map(a:JsonValue) = a match { case e:JsonMapTrait => e; 
+object JsonMap {
+  implicit def value2Map(a:JsonValue) = a match { case e:JsonMap => e; 
                                                      case _ => throw new ClassCastException("Cannot cast "+a.getClass +" to "+this.getClass)}
 }

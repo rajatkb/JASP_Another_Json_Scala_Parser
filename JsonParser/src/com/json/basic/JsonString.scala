@@ -1,6 +1,6 @@
 package com.json.basic
 
-import com.json.traits.JsonStringTrait
+import com.json.traits.JsonChars
 import com.json.traits.JsonWriteable
 import com.json.traits.JsonValue
 
@@ -11,11 +11,10 @@ import com.json.traits.JsonValue
 
 object JsonString{
   def apply(value:String) = new JsonString(value)
-  implicit def value2String(a:JsonValue) = a match { case e:JsonString => e; 
-                                                     case _ => throw new ClassCastException("Cannot cast "+a.getClass +" to "+this.getClass)}
+  implicit def value2String(a:JsonValue) = a.asInstanceOf[JsonString]
 }
 
-case class JsonString(value:String) extends JsonStringTrait(value) {
+case class JsonString(value:String) extends JsonChars(value) {
   override def toString() = if(value == null) "undefined" else "\""+value+"\""
-  override def copy(v:String) = new JsonString(v)
+  
 }

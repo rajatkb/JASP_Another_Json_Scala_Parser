@@ -8,8 +8,6 @@ import com.json.traits.JsonUnit
 import com.json.basic.JsonString
 import com.json.basic.JsonNumber
 import com.json.basic.JsonBoolean
-import com.json.traits.JsonNumberTrait
-import com.json.traits.JsonStringTrait
 
 /**
  * Benchmark with citylots.json : Elapsed time: 227.2318s
@@ -28,25 +26,30 @@ import com.json.traits.JsonStringTrait
 object Main {
 
   def main(args: Array[String]): Unit = {
-    val filename = "E://Project Work//citylots.json"
+//    val filename = "E://Project Work//citylots.json"
     val filename2 = "E://Project Work//JASP_Another_Json_Scala_Parser//JsonParser//test.json"
-    val newfile = "E://Project Work//JASP_Another_Json_Scala_Parser//JsonParser//newfile.json"
+    val filename3 = "E://Project Work//JASP_Another_Json_Scala_Parser//JsonParser//newfile.json"
     
-    val a = Logger.timer( JSON.parseFile(filename2) )
+    val a = Logger.timer( JSON.parseFile(filename2))
     
-//    print(a("context")("date"))
+    println(a("context")("date"))
     
     val map = JsonObject(1 -> 2 , 3 -> JsonArray(-1.00,2.00,-3.00564,4.35656) , "hello" -> JsonBoolean(true) )
     
-    println(map)
+    val num = map(3)
     
-    val str = map.getStringStream().toList mkString ""
+    println(num)
+    
+    val str = map.toStream().toList mkString ""
     
     println(str)
     
     val smap = JSON.parseString(str)
     
-    JSON.toFile(smap, newfile)
+    JSON.toFile(smap, "newfile.json")
+    
+    
+    
    
   }
 

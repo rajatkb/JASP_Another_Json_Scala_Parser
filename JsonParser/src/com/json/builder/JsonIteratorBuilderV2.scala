@@ -3,20 +3,18 @@ package com.json.builder
 
 import com.json.traits.JsonFactory
 import com.json.traits.JsonUnit
-import com.json.traits.JsonKey
 import com.json.traits.JsonValue
-import com.json.traits.JsonMapTrait
 import scala.annotation.tailrec
 import com.json.traits.JsonKey
-import com.json.traits.JsonMapTrait
-import com.json.traits.JsonListTrait
-import com.json.traits.JsonBuilderTrait
+import com.json.traits.JsonMap
+import com.json.traits.JsonList
+import com.json.traits.JsonBuilder
 
 /**
  * This was supposed to be a better performing version, turns out it's the other way round.
  * Native comparisons did not helped at all
  */
-class JsonIteratorBuilderV2(factory:JsonFactory) extends JsonBuilderTrait(factory)  {
+class JsonIteratorBuilderV2(factory:JsonFactory) extends JsonBuilder(factory)  {
   
   // Light weight Stack implementation
   private class Stack[T] {
@@ -98,9 +96,9 @@ class JsonIteratorBuilderV2(factory:JsonFactory) extends JsonBuilderTrait(factor
    * This function handles nested Arrays and JsonMaps that are already in the stack
    */
   
-  private var subJsonArrayStack: Stack[JsonListTrait] = new Stack[JsonListTrait]()
+  private var subJsonArrayStack: Stack[JsonList] = new Stack[JsonList]()
   @tailrec
-  private def createArray(tempValue: JsonValue, tempA: JsonListTrait): JsonListTrait = {
+  private def createArray(tempValue: JsonValue, tempA: JsonList): JsonList = {
     symbolStack.pop match {
       case `Vs` => {
         val value = stringValueStack.pop()
@@ -142,10 +140,10 @@ class JsonIteratorBuilderV2(factory:JsonFactory) extends JsonBuilderTrait(factor
     subJsonMapStack.push(tv)
   }
 
-  private var subJsonMapStack: Stack[JsonMapTrait] = new Stack[JsonMapTrait]()
+  private var subJsonMapStack: Stack[JsonMap] = new Stack[JsonMap]()
   @tailrec
-  private def visitNode(tempS: JsonMapTrait, tempP: (JsonKey, JsonValue),
-    tempL: List[(JsonKey, JsonValue)], tempKey: JsonKey, tempValue: JsonValue): JsonMapTrait = {
+  private def visitNode(tempS: JsonMap, tempP: (JsonKey, JsonValue),
+    tempL: List[(JsonKey, JsonValue)], tempKey: JsonKey, tempValue: JsonValue): JsonMap = {
     symbolStack.isEmpty() match {
       case true => tempS
       case false => symbolStack.pop() match {
@@ -218,7 +216,7 @@ class JsonIteratorBuilderV2(factory:JsonFactory) extends JsonBuilderTrait(factor
   /**
    * construction rule for S -> (P L)
    */
-  private def constructS(tempP: (JsonKey, JsonValue), tempL: List[(JsonKey, JsonValue)]): JsonMapTrait = (tempP, tempL) match {
+  private def constructS(tempP: (JsonKey, JsonValue), tempL: List[(JsonKey, JsonValue)]): JsonMap = (tempP, tempL) match {
     case (null, null) => factory.createJsonMap(Map())
     case (null, Nil) => factory.createJsonMap(Map())
     case (_, _) => factory.createJsonMap((tempP :: tempL).toMap)
@@ -226,7 +224,7 @@ class JsonIteratorBuilderV2(factory:JsonFactory) extends JsonBuilderTrait(factor
   /**
    * construction rule for A -> (V L)
    */
-  private def constructA(tempV: JsonValue, tempA: JsonListTrait) = (tempV, tempA) match {
+  private def constructA(tempV: JsonValue, tempA: JsonList) = (tempV, tempA) match {
     case (null, null) => factory.createJsonList(Nil)
     case (_, null) => factory.createJsonList(tempV :: List[JsonValue]())
     case (_, _) => factory.createJsonList(tempV :: List[JsonValue]() ++ tempA.getValue())
@@ -237,7 +235,7 @@ class JsonIteratorBuilderV2(factory:JsonFactory) extends JsonBuilderTrait(factor
    * Traverse the stack from top to bottom and build the
    * Json
    */
-  override def build(): JsonMapTrait = {
+  override def build(): JsonMap = {
     if (subJsonMapStack.isEmpty() == true)
       throw new IllegalStateException("Wrong sequence of builder.push() called, JsonMapStack can never be emprty !")
     subJsonMapStack.pop()

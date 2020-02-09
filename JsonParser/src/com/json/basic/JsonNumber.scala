@@ -1,7 +1,7 @@
 package com.json.basic
 
 import com.json.traits.JsonUnit
-import com.json.traits.JsonNumberTrait
+import com.json.traits.JsonNumeric
 import com.json.traits.JsonValue
 import com.json.traits.JsonKey
 import com.json.traits.JsonWriteable
@@ -14,14 +14,11 @@ import com.json.traits.JsonWriteable
 
 object JsonNumber {
   def apply(value: Double) = new JsonNumber(value)
-  implicit def value2Number(a:JsonValue) = a match { case e:JsonNumber => e; 
-                                                     case _ => throw new ClassCastException("Cannot cast "+a.getClass +" to "+this.getClass)}
+  implicit def value2Number(a:JsonValue) = a.asInstanceOf[JsonNumber]
 }
 
-case class JsonNumber(value: Double) extends JsonNumberTrait(value) {
+case class JsonNumber(value: Double) extends JsonNumeric(value) {
   override def toString() = value.toString()
-  override def copy(v: Double) = new JsonNumber(v)
-
 }
 
 
