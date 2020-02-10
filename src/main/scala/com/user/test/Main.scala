@@ -39,7 +39,6 @@ object Main {
 
 //    val filename = "E://Project Work//citylots.json"
     val filename2 =  Paths.get(getClass().getClassLoader().getResource("test.json").toURI()).toString()
-    val filename3 = Paths.get(getClass().getClassLoader().getResource("test2.json").toURI()).toString()
    
     
     val a = this.timer( JSON.parseFile(filename2))
