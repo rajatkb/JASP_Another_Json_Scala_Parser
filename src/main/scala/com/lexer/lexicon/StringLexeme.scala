@@ -12,7 +12,7 @@ class StringLexeme(str:String, lineNumber:Int, columnNumber:Int) extends Lexeme 
                             else "("+this.getSymbol()+"|"+str+","+lineNumber+","+columnNumber+")"
                             
   override def getString() = str
-  override def getDouble() = throw new IllegalAccessError(s"Double value asked fom String lexeme $str at (l,c): ${this.lineNumber} , ${this.columnNumber}")
-  override def getBoolean() = throw new IllegalAccessError(s"Boolean value asked fom String lexeme $str at (l,c): ${this.lineNumber} , ${this.columnNumber}")
+  override def getDouble() = throw new UnsupportedOperationException(s"Double value asked fom String lexeme $str at (l,c): ${this.lineNumber} , ${this.columnNumber}")
+  override def getBoolean() = throw new UnsupportedOperationException(s"Boolean value asked fom String lexeme $str at (l,c): ${this.lineNumber} , ${this.columnNumber}")
 
 }

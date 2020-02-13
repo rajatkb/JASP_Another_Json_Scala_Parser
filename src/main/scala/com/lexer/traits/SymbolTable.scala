@@ -1,6 +1,6 @@
 package com.lexer.traits
 
-import java.util.IllegalFormatException
+
 
 trait SymbolTable {
   val OPENBRACE = '{'
@@ -13,6 +13,7 @@ trait SymbolTable {
   val NUMBER = 'n'
   val BOOL = 'b'
   val DOUBLEQUOTE = '\"'
+  val BACKSLASH = '\\'
   
   def checkValidJsonStructureIdentifier = (char:Char) => char match {
     case `OPENBRACE` => true

@@ -8,7 +8,15 @@ import com.json.basic.JsonString
 import com.json.basic.JsonNumber
 import com.json.basic.JsonBoolean
 import java.nio.file.Paths
-
+import scala.util.Try
+import java.io.BufferedReader
+import java.io.FileReader
+import scala.util.Success
+import scala.util.Failure
+import scala.io.Source
+import com.file.tokenizer.Tokenizer
+import com.file.tokenizer.Tokenizer
+import com.lexer.analyzer.LexemeGenerator
 
 /**
  * Benchmark with citylots.json : Elapsed time: 227.2318s
@@ -16,7 +24,7 @@ import java.nio.file.Paths
  *
  * Further work
  *
- * 
+ *
  * 1.1 The above should also work as a pretty print but that's a later concern
  * 2. Add the map and array operators to the interface of map and arrays
  * 3. Write a lazy version of the Json Objects and arrays and numbers etc.
@@ -26,42 +34,34 @@ import java.nio.file.Paths
 
 object Main {
 
- def timer[R](block: => R): R = {
-      val t0 = System.nanoTime()
-      val result = block    // call-by-name
-      val t1 = System.nanoTime()
-      val timeElapsed = (t1 - t0).toFloat/1000000000
-      println(s"Elapsed time: $timeElapsed")
-      result 
- }
+  
   
   def main(args: Array[String]): Unit = {
 
-//    val filename = "E://Project Work//citylots.json"
-    val filename2 =  Paths.get(getClass().getClassLoader().getResource("test.json").toURI()).toString()
-   
+    val filename = "E://Project Work//citylots.json"
+    val filename2 = Paths.get(getClass().getClassLoader().getResource("test.json").toURI()).toString()
+
+     
     
-    val a = this.timer( JSON.parseFile(filename2))
     
+    val a = JSON.parseFile(filename2)
+
     println(a("context")("date"))
-    
-    val map = JsonObject(1 -> 2 , 3 -> JsonArray(-1.00,2.00,-3.00564,4.35656) , "hello" -> JsonBoolean(true) )
-    
+
+    val map = JsonObject(1 -> 2, 3 -> JsonArray(-1.00, 2.00, -3.00564, 4.35656), "hello" -> JsonBoolean(true))
+
     val num = map(3)
-    
+
     println(num)
     
     val str = map.toStream().toList mkString ""
-    
+
     println(str)
-    
+
     val smap = JSON.parseString(str)
-    
+
     JSON.toFile(smap, "test_out.json")
-    
-    
-    
-   
+
   }
 
 }

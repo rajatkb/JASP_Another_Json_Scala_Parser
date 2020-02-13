@@ -14,8 +14,8 @@ class SymbolLexeme(symbol:Char, lineNumber:Int, columnNumber:Int) extends Lexeme
   def getSymbol() =  symbol
   override def toString() = "("+this.getSymbol()+"|"+symbol+","+lineNumber+","+columnNumber+")"
   
-  override def getString() = throw new IllegalAccessError(s"String value asked fom Symbol lexeme $symbol at (l,c): ${this.lineNumber},${this.columnNumber}")
-  override def getDouble() = throw new IllegalAccessError(s"Double value asked fom Symbol lexeme $symbol at (l,c):${this.lineNumber},${this.columnNumber}")
-  override def getBoolean() = throw new IllegalAccessError(s"Boolean value asked fom Symbol lexeme $symbol at (l,c):${this.lineNumber},${this.columnNumber}")
+  override def getString() = throw new UnsupportedOperationException(s"String value asked fom Symbol lexeme $symbol at (l,c): ${this.lineNumber},${this.columnNumber}")
+  override def getDouble() = throw new UnsupportedOperationException(s"Double value asked fom Symbol lexeme $symbol at (l,c):${this.lineNumber},${this.columnNumber}")
+  override def getBoolean() = throw new UnsupportedOperationException(s"Boolean value asked fom Symbol lexeme $symbol at (l,c):${this.lineNumber},${this.columnNumber}")
 
 }

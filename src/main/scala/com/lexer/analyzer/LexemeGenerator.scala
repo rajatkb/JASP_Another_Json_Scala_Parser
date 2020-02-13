@@ -7,165 +7,205 @@ import com.lexer.lexicon.StringLexeme
 import com.lexer.lexicon.SymbolLexeme
 import com.lexer.lexicon.NumberLexeme
 import com.lexer.lexicon.BooleanLexeme
-import com.lexer.traits.LexemeGeneratorTrait
+import com.lexer.traits.LexemeGen
 import com.file.tokenizer.TextToken
+import com.lexer.traits.Lexeme
+import com.lexer.traits.SymbolTable
+import com.file.tokenizer.TextToken
+import com.lexer.lexicon.StringLexeme
+import com.file.tokenizer.TextToken
+import scala.annotation.tailrec
+import com.lexer.lexicon.NumberLexeme
 
-class LexemeGenerator(tokens: => Stream[TextToken]) extends LexemeGeneratorTrait(tokens){
-  
-    val stateS = 0
-    val state1 = 1 // string entry
-    val state2 = 2 // boolean true
-    val state3 = 3 // double number before decimal
-    val state4 = 4 // double number after decimal
-    val state5 = 5 // double number at e
-    val state6 = 6 // double numbar at +
-    val state7 = 7 // double number after +
-    val state8 = 8 // null values like boolean
-    val stateF = -1
+class LexemeGenerator(tokens:Iterator[TextToken]) extends LexemeGen(tokens){
+
     
-
-        
     
-    override def getStream() = tokens.scanLeft((stateS,false,new StringBuilder("") , Array[Lexeme](null,null)))((acc,token) => {
+    
+    
+    private trait State extends SymbolTable{
       
-
-      
-      val (state,output,buffer,prevlexArray) = acc
-
-      (state,token.char) match {
-        // Check for json structure symbol
-        case (`stateS`,v) if this.checkValidJsonStructureIdentifier(v) => {
-            prevlexArray(0) = new SymbolLexeme(v,token.lineNumber , token.columnNumber)
-            prevlexArray(1) = null
-            (stateS,true,buffer,prevlexArray)
-          }
-        
-        // Check for json string literal
-        case (`stateS`, this.DOUBLEQUOTE) => (state1,false,buffer,prevlexArray)
-        case (`state1`, this.DOUBLEQUOTE) =>{
-            val value = buffer.toString().trim()
-            try{ 
-              value.toDouble 
-              prevlexArray(0) = new NumberLexeme(value,token.lineNumber,token.columnNumber)
-              prevlexArray(1) = null    
-            }catch{
-              case e:NumberFormatException => {
-                try{
-                  value.toBoolean
-                  prevlexArray(0) = new BooleanLexeme(value,token.lineNumber,token.columnNumber)
-                  prevlexArray(1) = null
-                }catch{
-                  case e:Exception => {
-                    prevlexArray(0) = new StringLexeme(buffer.toString() , token.lineNumber , token.columnNumber)
-                    prevlexArray(1) = null    
-                  }
-                }
-              }
-            }
-
-            buffer.clear()
-            (stateS,true, buffer, prevlexArray) }
-        
-        case (`state1`, v) => (state1, false,buffer.append(v), prevlexArray )
-        
-        // Check for boolean
-        case (`state2`,v) if((buffer.toString() == "false" || buffer.toString() == "true") && this.checkValidJsonStructureIdentifier(v))  =>{ 
-            prevlexArray(0) = new BooleanLexeme(buffer.toString(),token.lineNumber,token.columnNumber)
-            prevlexArray(1) = new SymbolLexeme(v,token.lineNumber , token.columnNumber)
-            buffer.clear()
-            (stateS,true, buffer , prevlexArray) 
-          }
-        case (`state2`,v) if(buffer.toString() == "false" || buffer.toString() == "true" ) =>{ 
-            prevlexArray(0) = new BooleanLexeme(buffer.toString(),token.lineNumber,token.columnNumber)
-            prevlexArray(1) = null
-            buffer.clear()
-            (stateS,true, buffer , prevlexArray) 
-          }
-        case (`stateS`,'f') => (state2,false,buffer.append('f'),prevlexArray)
-        case (`stateS`,'t') => (state2,false,buffer.append('t'),prevlexArray)
-        case (`state2`, b) if(Array('a','l','s','e','r','u').contains(b)) => (state2,false,buffer.append(b),prevlexArray)
-        case (`state2`,_) => throw new IllegalStateException("Bad supposed boolean value at (l,n):"+token.lineNumber+","+token.columnNumber)
-        
-        //Check for null
-        case (`state8`, v) if(buffer.toString() == "null" && this.checkValidJsonStructureIdentifier(v)) => {
-          prevlexArray(0) = new StringLexeme(null,token.lineNumber,token.columnNumber)
-          prevlexArray(1) = new SymbolLexeme(v,token.lineNumber , token.columnNumber)
-          buffer.clear()
-          (stateS,true, buffer , prevlexArray)
-        }
-        case (`state8`, v) if(buffer.toString() == "null") => {
-          prevlexArray(0) = new StringLexeme(null,token.lineNumber,token.columnNumber)
-          prevlexArray(1) = null
-          buffer.clear()
-          (stateS,true, buffer , prevlexArray)
-        }
-        case (`stateS`,'n') => (state8,false,buffer.append('n'),prevlexArray)
-        case (`state8`, b) if(Array('u','l','l').contains(b)) => (state8,false,buffer.append(b),prevlexArray)
-        
-        
-        // Check for number
-        case (`stateS`,v) if (v == '-') => (state3,false,buffer.append(v), prevlexArray)
-        case (`stateS`,v) if (v.isDigit) => (state3,false,buffer.append(v),prevlexArray)
-        case (`state3`,v) if (v.isDigit) => (state3,false,buffer.append(v),prevlexArray)
-        case (`state3`,v) if (v == '.') => (state4,false,buffer.append(v),prevlexArray)
-        case (`state4`,v) if (v.isDigit) => (state4,false,buffer.append(v),prevlexArray)
-        case (`state4`,v) if (v == 'e') => (state5,false,buffer.append(v),prevlexArray)
-        case (`state5`,v) if (v == '+') => (state6,false,buffer.append(v),prevlexArray)
-        case (`state6`,v) if (v.isDigit) => (state6,false,buffer.append(v),prevlexArray)
-        
-        case (`state6`,b) if this.checkValidJsonStructureIdentifier(b) => {
-          prevlexArray(0) = new NumberLexeme(buffer.toString().trim(),token.lineNumber,token.columnNumber)
-          prevlexArray(1) = new SymbolLexeme(b,token.lineNumber , token.columnNumber)
-          buffer.clear()
-          (stateS,true,buffer, prevlexArray)
-        }
-        case (`state3`,b) if this.checkValidJsonStructureIdentifier(b) => {
-          prevlexArray(0) = new NumberLexeme(buffer.toString().trim(),token.lineNumber,token.columnNumber)
-          prevlexArray(1) = new SymbolLexeme(b,token.lineNumber , token.columnNumber)
-          buffer.clear()
-          (stateS,true,buffer, prevlexArray)
-        }
-        case (`state4`,b) if this.checkValidJsonStructureIdentifier(b) => {
-          prevlexArray(0) = new NumberLexeme(buffer.toString().trim(),token.lineNumber,token.columnNumber)
-          prevlexArray(1) = new SymbolLexeme(b,token.lineNumber , token.columnNumber)
-          buffer.clear()
-          (stateS,true,buffer, prevlexArray)
-        }
-        
-        case (`state6`,b)  => {
-          prevlexArray(0) = new NumberLexeme(buffer.toString().trim(),token.lineNumber,token.columnNumber)
-          prevlexArray(1) = null
-          buffer.clear()
-          (stateS,true,buffer, prevlexArray)
-        }
-        case (`state3`,b)  => {
-          prevlexArray(0) = new NumberLexeme(buffer.toString().trim(),token.lineNumber,token.columnNumber)
-          prevlexArray(1) = null
-          buffer.clear()
-          (stateS,true,buffer, prevlexArray)
-        }
-        case (`state4`,b)  => {
-          prevlexArray(0) = new NumberLexeme(buffer.toString().trim(),token.lineNumber,token.columnNumber)
-          prevlexArray(1) = null
-          buffer.clear()
-          (stateS,true,buffer, prevlexArray)
-        }
-        
-        
-        case _ => (state,false,buffer,prevlexArray)
-        
+      def cleanBuffer(buffer:StringBuilder) :(String, StringBuilder) = {
+        val string = buffer.toString()
+        buffer.clear()
+        (string , buffer)
       }
-      
-    })
-    .filter { case (state,output,buffer,value) => output }
-    .map(f => f._4)
-    .flatten
-    .filter(p => p != null ).toStream
+      def transition(token:TextToken , buffer:StringBuilder):(State,StringBuilder,List[Lexeme]) 
+    }
+    
+    
+    private case object startState extends State {
+        override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+          
+          case this.DOUBLEQUOTE => (quoteState ,buffer , Nil )
+          case v if this.checkValidJsonStructureIdentifier(v) => (this , buffer , new SymbolLexeme(v , token.lineNumber , token.columnNumber) :: Nil)
+          case 'f' => (fState , buffer , Nil)
+          case 't' => (tState , buffer , Nil)
+          case 'n' => (nState , buffer , Nil)
+          case '+' => (numberState , buffer.append('+') , Nil)
+          case '-' => (numberState , buffer.append('-') , Nil)
+          case v if v.isDigit => (numberState , buffer.append(v) , Nil)
+          case _ => (startState , buffer , Nil)
+        }
+    }
+    
+    private case object numberState extends State {
+      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+        case v if v.isDigit => (numberState , buffer.append(v) , Nil)
+        case v if this.checkValidJsonStructureIdentifier(v) => {
+          val (string , b) = this.cleanBuffer(buffer)
+          (startState , b ,new NumberLexeme(string.toDouble , token.lineNumber , token.columnNumber) :: new SymbolLexeme(v , token.lineNumber , token.columnNumber) :: Nil)
+        }
+        case '.' => (afterDecimalState , buffer.append('.') , Nil)
+        case _ => {
+          val (string , b) = this.cleanBuffer(buffer)
+          (startState , b ,new NumberLexeme(string.toDouble , token.lineNumber , token.columnNumber) :: Nil)
+        } 
+      }
+    }
+    
+    private case object afterDecimalState extends State {
+      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+        case v if v.isDigit => (afterDecimalState , buffer.append(v) , Nil)
+        case v if this.checkValidJsonStructureIdentifier(v) => {
+          val (string , b) = this.cleanBuffer(buffer)
+          (startState , b ,new NumberLexeme(string.toDouble , token.lineNumber , token.columnNumber) :: new SymbolLexeme(v , token.lineNumber , token.columnNumber) :: Nil)
+        }
+        case 'e' => (exponentState , buffer.append('e') , Nil)
+        case 'E' => (exponentState , buffer.append('E') , Nil)
+        case _ => {
+          val (string , b) = this.cleanBuffer(buffer)
+          (startState , b ,new NumberLexeme(string.toDouble , token.lineNumber , token.columnNumber) :: Nil)
+        }
+      }
+    }
+    
+    private case object exponentState extends State {
+      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+        case '+' => (afterExponentState , buffer.append('+') , Nil)
+        case '-' => (afterExponentState , buffer.append('-') , Nil)
+        case v if v.isDigit => (afterExponentState , buffer.append(v) , Nil)
+        case _ => throw new IllegalStateException(s"Bad number literal at line: ${token.lineNumber} column:${token.columnNumber}")
+      }
+    }
+    
+    
+    private case object afterExponentState extends State {
+      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+        case v if v.isDigit => (numberState , buffer.append(v) , Nil)
+        case v if this.checkValidJsonStructureIdentifier(v) => {
+          val (string , b) = this.cleanBuffer(buffer)
+          (startState , b ,new NumberLexeme(string.toDouble , token.lineNumber , token.columnNumber) :: new SymbolLexeme(v , token.lineNumber , token.columnNumber) :: Nil)
+        }
+        case _ => {
+          val (string , b) = this.cleanBuffer(buffer)
+          (startState , b ,new NumberLexeme(string.toDouble , token.lineNumber , token.columnNumber) :: Nil)
+        }
+      }
+    }
+    
+    
+    
+    private case object quoteState extends State {
+      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+        case this.BACKSLASH => (backSlashState , buffer , Nil)
+        case this.DOUBLEQUOTE => {
+          val (string , b) = this.cleanBuffer(buffer)
+          (startState, b ,  new StringLexeme(string , token.lineNumber , token.columnNumber) ::Nil)
+        }
+        case v => {
+          (quoteState , buffer.append(v) , Nil)
+        }
+      }
+    }
+    
+    private case object backSlashState extends State {
+      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+          case '"' => (quoteState, buffer.append('\"') , Nil)
+          case '\\' => (quoteState, buffer.append('\\') , Nil)
+          case '/' => (quoteState, buffer.append('/') , Nil)
+          case 'b' => (quoteState, buffer.append('\b') , Nil)
+          case 'f' => (quoteState, buffer.append('\f') , Nil)
+          case 'n' => (quoteState , buffer.append('\n') , Nil)
+          case 'r' => (quoteState , buffer.append('\r') , Nil)
+          case 't' => (quoteState, buffer.append('\t') , Nil)
+          case v   => throw new IllegalStateException(s" Bad character encountered at line: ${token.lineNumber} , column: ${token.columnNumber} , found $v")
+      }
+    }
+    
+    
+    private case object tState extends State {
+      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+        case 'r' => (rState , buffer , Nil)
+        case _ => throw new IllegalStateException(s"Bad supposed boolean value at line: ${token.lineNumber}, column: ${token.columnNumber}")
+      }
+    }
+    
+    private case object rState extends State {
+      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+        case 'u' => (uState , buffer , Nil)
+        case _ => throw new IllegalStateException(s"Bad supposed boolean value at line: ${token.lineNumber}, column: ${token.columnNumber}")
+      }
+    }
+    
+    private case object uState extends State {
+      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+        case 'e' => (startState , buffer , new BooleanLexeme(true,token.lineNumber,token.columnNumber) :: Nil)
+        case 'l' => (lState , buffer , Nil)
+        case _ => throw new IllegalStateException(s"Bad supposed boolean value at line: ${token.lineNumber}, column: ${token.columnNumber}")
+      }
+    }
+    
+    private case object fState extends State {
+      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+        case 'a' => (aState, buffer , Nil)
+        case _ => throw new IllegalStateException(s"Bad supposed boolean value at line: ${token.lineNumber}, column: ${token.columnNumber}")
+      }
+    }
+    
+    private case object aState extends State {
+      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+        case 'l' => (lState , buffer , Nil)
+        case _ => throw new IllegalStateException(s"Bad supposed boolean value at line: ${token.lineNumber}, column: ${token.columnNumber}")
+      }
+    }
+    
+    private case object lState extends State {
+       override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+        case 's' => (sState , buffer , Nil)
+        case 'l' => (startState , buffer , new StringLexeme(null,token.lineNumber,token.columnNumber) :: Nil)
+        case _ => throw new IllegalStateException(s"Bad supposed boolean value at line: ${token.lineNumber}, column: ${token.columnNumber}")
+      }
+    }
+    
+    private case object sState extends State {
+       override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+        case 'e' => (startState , buffer , new BooleanLexeme(false,token.lineNumber,token.columnNumber) :: Nil)
+        case _ => throw new IllegalStateException(s"Bad supposed boolean value at line: ${token.lineNumber}, column: ${token.columnNumber}")
+      }
+    }
+    
+    private case object nState extends State {
+      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+        case 'u' => (uState , buffer , Nil)
+        case _ => throw new IllegalStateException(s"Bad supposed null value at line: ${token.lineNumber}, column: ${token.columnNumber}")
+      }
+    }
     
     
     
     
     
+    private val stringBuffer = new StringBuilder("")
     
     
+    
+    override def getStream() = tokens.scanLeft((startState:State, stringBuffer, List[Lexeme]()))( ( acc , token) => {
+        val (state , buffer , _) = acc
+        state.transition(token , buffer)
+    }).map(f => f._3).flatten
+    
+    
+
+        
 }

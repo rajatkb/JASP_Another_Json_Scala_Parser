@@ -3,9 +3,9 @@ package com.parser.director
 import com.lexer.analyzer.LexemeGenerator
 import com.json.traits.JsonBuilder
 import com.file.tokenizer.Tokenizer
-import com.lexer.traits.LexemeGeneratorTrait
+import com.lexer.traits.LexemeGen
 
-class Parser(lexer:LexemeGeneratorTrait, builder:JsonBuilder) extends ParseTable{
+class Parser(lexer:LexemeGen, builder:JsonBuilder) extends ParseTable{
     
   def parse() = {
     val stack = lexer.getStream().foldLeft(List(this.S,this.STOP))((stack,lexeme) => {

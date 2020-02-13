@@ -31,7 +31,7 @@ import java.io.BufferedOutputStream
 import java.io.FileOutputStream
 import com.json.builder.JsonIteratorBuilderV2
 import com.json.traits.JsonBuilder
-import com.lexer.traits.LexemeGeneratorTrait
+import com.lexer.traits.LexemeGen
 import java.nio.file.Files
 import java.nio.file.Paths
 import com.json.traits.JsonFactory
@@ -46,7 +46,7 @@ object Jasp {
   
   private def getDefaultJsonBuilder = (factory:JsonFactory) => new JsonIteratorBuilder(factory)
   private def getDefaultTokenizer = (src:Source) => new Tokenizer(src)
-  private def getDefaultParser = (t:LexemeGeneratorTrait ,f:JsonBuilder ) => new Parser(t , f)
+  private def getDefaultParser = (t:LexemeGen ,f:JsonBuilder ) => new Parser(t , f)
   
   
   
@@ -63,12 +63,12 @@ object Jasp {
   
   
   // A minimal Source implementation with close and getLines implemented
-  private class NioSource(src:String) extends Source {
+  class NioSource(src:String) extends Source {
     val iter = null
-    val file = Files.lines(Paths.get(src))
-    val lineIter= file.iterator()
+    private val file = Files.lines(Paths.get(src))
+    private val lineIter= file.iterator()
     
-    override def getLines() = new Iterator[String] {
+    override def getLines():Iterator[String] = new Iterator[String] {
       override def hasNext() = lineIter.hasNext()
       override def next() = lineIter.next()
     } 

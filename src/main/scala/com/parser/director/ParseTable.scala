@@ -59,7 +59,7 @@ trait ParseTable extends SymbolTable {
       case(`K`,`NUMBER`) =>builder.pushK(lexeme.getDouble()); stackOperation( NUMBER ::stack.tail, lexeme , builder)
       case(`K`,`BOOL`) => builder.pushK(lexeme.getBoolean()); stackOperation( BOOL ::stack.tail, lexeme , builder)
       
-      case (stackSymb,lex) if (stackSymb == lex) => stack.tail
+      case (stackSymb,terminalSymb) if (stackSymb == terminalSymb) => stack.tail
       case _ =>try{
         throw new IllegalStateException(s"Look ahead or action for $stack.head not found on $lexeme cannot parse Json, illegal symbol at (l,c): ${lexeme.getLineNumber()} , ${lexeme.getColumnNumber()}")
       }catch{
