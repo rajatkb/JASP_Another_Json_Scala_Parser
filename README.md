@@ -69,7 +69,10 @@ You can run the above for testing the package by changing the filename ,
 * Add the jar as external dependency
 
 
-## Why a Scala Json Parser again ?  
+## Why a Scala Json Parser again ?
+* When referenced from (here)[https://blog.overops.com/the-ultimate-json-library-json-simple-vs-gson-vs-jackson-vs-json/] ,
+  it appears the Scala implementation is faster for citylots.json. Currently it is at 40s average
+
 * Expose the JSON object API allowing you to build complex composition without actually walking through the JSON.
   You can just inherit the MapTrait , ListTrait etc and push them into the parser.
 * Because It's fun and I did for educational purpose also it was a good way of practicing OOP design pattern  
