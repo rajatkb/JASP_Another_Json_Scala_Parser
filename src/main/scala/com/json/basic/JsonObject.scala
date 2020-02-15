@@ -1,5 +1,4 @@
 package com.json.basic
-//import scala.collection.mutable.HashMap
 
 import com.json.traits.JsonUnit
 import com.json.traits.JsonValue
@@ -16,16 +15,14 @@ import com.json.traits.JsonWriteable
 
 object JsonObject{
   def apply(value:Map[JsonKey , JsonValue] = Map()) = new JsonObject(value)
-  def apply(args:(JsonKey,JsonValue)*) = new JsonObject(args.toMap)
+  def apply(args:(JsonKey,JsonValue)*) = {
+    new JsonObject( args.toMap )
+  }
   implicit def value2Map(a:JsonValue) = a.asInstanceOf[JsonObject]
 }
 
 class JsonObject(value:Map[JsonKey , JsonValue] = Map()) extends JsonMap(value) {
   
-  override def toString() = "{"+value.toList.map(f => f._1 + ":" + f._2).mkString(",\n")+"}"
-  
-  def this(args:(JsonKey,JsonValue)* ) = this(args.toMap)
- 
- 
+  override def toString() = "{"+value.toList.map(f => f._1 + ": " + f._2).mkString(",\n")+"}"
 
 }

@@ -56,5 +56,7 @@ class LexemeGeneratorTest {
     var array = (for( lex <- lexemeGen.getStream()) yield { lex.getDouble() }).toArray
     assert( array.sameElements(testRes) , "LexemeGenerator Not working")
   }
+ 
+  
   
 }

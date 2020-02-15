@@ -1,22 +1,14 @@
 package com.user.test
 
+import java.nio.file.Paths
+
 import com.api.Jasp._
+import com.api.Jasp.num2Key
+import com.api.Jasp.string2Key
+import com.json.basic.JsonNumber
 import com.json.basic.JsonObject
 import com.json.basic.JsonArray
-import com.json.traits.JsonUnit
-import com.json.basic.JsonString
-import com.json.basic.JsonNumber
 import com.json.basic.JsonBoolean
-import java.nio.file.Paths
-import scala.util.Try
-import java.io.BufferedReader
-import java.io.FileReader
-import scala.util.Success
-import scala.util.Failure
-import scala.io.Source
-import com.file.tokenizer.Tokenizer
-import com.file.tokenizer.Tokenizer
-import com.lexer.analyzer.LexemeGenerator
 
 /**
  * Benchmark with citylots.json : Elapsed time: 227.2318s
@@ -34,18 +26,25 @@ import com.lexer.analyzer.LexemeGenerator
 
 object Main {
 
-  
+  def timer[R](block: => R): R = {
+      val t0 = System.nanoTime()
+      val result = block    // call-by-name
+      val t1 = System.nanoTime()
+      val time = (t1 - t0).toFloat/1000000000
+      print(s"Elapse time $time")
+      result
+  }
   
   def main(args: Array[String]): Unit = {
 
-    val filename = "E://Project Work//citylots.json"
+//    val filename = "E://Project Work//citylots.json"
     val filename2 = Paths.get(getClass().getClassLoader().getResource("test.json").toURI()).toString()
 
      
     
-    
-    val a = JSON.parseFile(filename2)
+    val a = timer(JSON.parseFile(filename2))
 
+    
     println(a("context")("date"))
 
     val map = JsonObject(1 -> 2, 3 -> JsonArray(-1.00, 2.00, -3.00564, 4.35656), "hello" -> JsonBoolean(true))

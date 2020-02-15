@@ -1,6 +1,5 @@
 package com.json.traits
 
-//import scala.collection.mutable.HashMap
 
 /**
  * varargs for the createFunction. user can now add more argument to implementation

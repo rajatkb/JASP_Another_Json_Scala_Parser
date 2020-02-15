@@ -1,13 +1,13 @@
 package com.json.builder
 
-import com.json.traits.JsonFactory
-import com.json.traits.JsonUnit
-import com.json.traits.JsonValue
-import com.json.traits.JsonMap
 import scala.annotation.tailrec
-import com.json.traits.JsonKey
+
 import com.json.traits.JsonBuilder
+import com.json.traits.JsonFactory
+import com.json.traits.JsonKey
 import com.json.traits.JsonList
+import com.json.traits.JsonMap
+import com.json.traits.JsonValue
 
 /**
  *
@@ -205,7 +205,7 @@ class JsonIteratorBuilder(factory: JsonFactory) extends JsonBuilder(factory) {
   private def constructS(tempP: (JsonKey, JsonValue), tempL: List[(JsonKey, JsonValue)]): JsonMap = (tempP, tempL) match {
     case (null, null) => factory.createJsonMap(Map())
     case (null, Nil) => factory.createJsonMap(Map())
-    case (_, _) => factory.createJsonMap((tempP :: tempL).toMap)
+    case (_, _) => factory.createJsonMap( (tempP :: tempL).toMap )
   }
   /**
    * construction rule for A -> (V L)

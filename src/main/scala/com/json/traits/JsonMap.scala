@@ -1,8 +1,12 @@
 package com.json.traits
-//import scala.collection.mutable.HashMap
 
+/**
+ * JsonMap abstract class now using mutable Map
+ * No performance benefit but give the ability to dynamically create the 
+ * object members on the fly while parsing
+ * 
+ */
 abstract class JsonMap(value:Map[JsonKey , JsonValue]) extends JsonUnit with JsonValue {
-  
   
   override def apply(key:JsonKey) = value.get(key).getOrElse(null)
   
@@ -14,7 +18,7 @@ abstract class JsonMap(value:Map[JsonKey , JsonValue]) extends JsonUnit with Jso
       val v = f._1 match {  case e:JsonChars => e.toStream(); 
                             case e => Stream("\"") #::: e.toStream() #::: Stream("\"") }
       
-      Stream(",") #::: v #::: Stream(":") #::: f._2.toStream()}
+      Stream(" , ") #::: v #::: Stream(" : ") #::: f._2.toStream()}
     )) match {
       case Stream() => Stream("{") #::: Stream("}")
       case v => Stream("{") #::: v.tail #::: Stream("}")
@@ -22,12 +26,8 @@ abstract class JsonMap(value:Map[JsonKey , JsonValue]) extends JsonUnit with Jso
     
   }
   
-
-  
 }
 
-
 object JsonMap {
-  implicit def value2Map(a:JsonValue) = a match { case e:JsonMap => e; 
-                                                     case _ => throw new ClassCastException("Cannot cast "+a.getClass +" to "+this.getClass)}
+  implicit def value2Map(a:JsonValue) = a.asInstanceOf[JsonMap]
 }

@@ -1,14 +1,16 @@
 package test.api
 
-import org.junit.Assert._
-
-import org.junit.Test
 import java.nio.file.Paths
-import com.api.Jasp._
-import com.json.basic._
+
+import org.junit.Assert.assertEquals
+import org.junit.Test
+
+import com.api.Jasp.JSON
+import com.api.Jasp.NioSource
+import com.api.Jasp.string2Key
 import com.file.tokenizer.Tokenizer
+import com.json.basic.JsonString
 import com.lexer.analyzer.LexemeGenerator
-import scala.io.Source
 
 class JaspTest {
   
@@ -53,7 +55,7 @@ class JaspTest {
   
   
   val filename =  Paths.get(getClass().getClassLoader().getResource("test.json").toURI()).toString()
-//  val filename = "E://Project Work//citylots.json"
+  val bigFilename = "E://Project Work//citylots.json"
   
   @Test
   def testParsing() = {
@@ -85,6 +87,17 @@ class JaspTest {
     this.lexerTime(filename)
   }
   
+  
+  @Test
+  def testForBigFile() = {
+    try{
+      val time = benchmark(10)(JSON.parseFile(bigFilename))
+      assert(time < 40 , s"Time take $time  for big file , reveert back to last commit")
+      Logger.info(s"Time for getting Lexicons $time")
+    }catch{
+      case _ => Logger.info("File not found , fix test and rerun")  
+    }
+  }
   
   
 }

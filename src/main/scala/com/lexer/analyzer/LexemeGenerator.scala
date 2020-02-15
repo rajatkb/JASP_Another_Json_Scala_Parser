@@ -1,21 +1,13 @@
 package com.lexer.analyzer
 
-import com.lexer.traits.SymbolTable
 import com.file.tokenizer.TextToken
-import com.lexer.traits.Lexeme
+import com.lexer.lexicon.BooleanLexeme
+import com.lexer.lexicon.NumberLexeme
 import com.lexer.lexicon.StringLexeme
 import com.lexer.lexicon.SymbolLexeme
-import com.lexer.lexicon.NumberLexeme
-import com.lexer.lexicon.BooleanLexeme
-import com.lexer.traits.LexemeGen
-import com.file.tokenizer.TextToken
 import com.lexer.traits.Lexeme
+import com.lexer.traits.LexemeGen
 import com.lexer.traits.SymbolTable
-import com.file.tokenizer.TextToken
-import com.lexer.lexicon.StringLexeme
-import com.file.tokenizer.TextToken
-import scala.annotation.tailrec
-import com.lexer.lexicon.NumberLexeme
 
 class LexemeGenerator(tokens:Iterator[TextToken]) extends LexemeGen(tokens){
 
@@ -25,17 +17,17 @@ class LexemeGenerator(tokens:Iterator[TextToken]) extends LexemeGen(tokens){
     
     private trait State extends SymbolTable{
       
-      def cleanBuffer(buffer:StringBuilder) :(String, StringBuilder) = {
+      protected def cleanBuffer(buffer:StringBuilder) :(String, StringBuilder) = {
         val string = buffer.toString()
         buffer.clear()
         (string , buffer)
       }
-      def transition(token:TextToken , buffer:StringBuilder):(State,StringBuilder,List[Lexeme]) 
+      def apply(token:TextToken , buffer:StringBuilder):(State,StringBuilder,List[Lexeme]) 
     }
     
     
     private case object startState extends State {
-        override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+        override def apply(token:TextToken , buffer:StringBuilder) = token.char match {
           
           case this.DOUBLEQUOTE => (quoteState ,buffer , Nil )
           case v if this.checkValidJsonStructureIdentifier(v) => (this , buffer , new SymbolLexeme(v , token.lineNumber , token.columnNumber) :: Nil)
@@ -50,7 +42,7 @@ class LexemeGenerator(tokens:Iterator[TextToken]) extends LexemeGen(tokens){
     }
     
     private case object numberState extends State {
-      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+      override def apply(token:TextToken , buffer:StringBuilder) = token.char match {
         case v if v.isDigit => (numberState , buffer.append(v) , Nil)
         case v if this.checkValidJsonStructureIdentifier(v) => {
           val (string , b) = this.cleanBuffer(buffer)
@@ -65,7 +57,7 @@ class LexemeGenerator(tokens:Iterator[TextToken]) extends LexemeGen(tokens){
     }
     
     private case object afterDecimalState extends State {
-      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+      override def apply(token:TextToken , buffer:StringBuilder) = token.char match {
         case v if v.isDigit => (afterDecimalState , buffer.append(v) , Nil)
         case v if this.checkValidJsonStructureIdentifier(v) => {
           val (string , b) = this.cleanBuffer(buffer)
@@ -81,7 +73,7 @@ class LexemeGenerator(tokens:Iterator[TextToken]) extends LexemeGen(tokens){
     }
     
     private case object exponentState extends State {
-      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+      override def apply(token:TextToken , buffer:StringBuilder) = token.char match {
         case '+' => (afterExponentState , buffer.append('+') , Nil)
         case '-' => (afterExponentState , buffer.append('-') , Nil)
         case v if v.isDigit => (afterExponentState , buffer.append(v) , Nil)
@@ -91,7 +83,7 @@ class LexemeGenerator(tokens:Iterator[TextToken]) extends LexemeGen(tokens){
     
     
     private case object afterExponentState extends State {
-      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+      override def apply(token:TextToken , buffer:StringBuilder) = token.char match {
         case v if v.isDigit => (numberState , buffer.append(v) , Nil)
         case v if this.checkValidJsonStructureIdentifier(v) => {
           val (string , b) = this.cleanBuffer(buffer)
@@ -107,7 +99,7 @@ class LexemeGenerator(tokens:Iterator[TextToken]) extends LexemeGen(tokens){
     
     
     private case object quoteState extends State {
-      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+      override def apply(token:TextToken , buffer:StringBuilder) = token.char match {
         case this.BACKSLASH => (backSlashState , buffer , Nil)
         case this.DOUBLEQUOTE => {
           val (string , b) = this.cleanBuffer(buffer)
@@ -120,7 +112,7 @@ class LexemeGenerator(tokens:Iterator[TextToken]) extends LexemeGen(tokens){
     }
     
     private case object backSlashState extends State {
-      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+      override def apply(token:TextToken , buffer:StringBuilder) = token.char match {
           case '"' => (quoteState, buffer.append('\"') , Nil)
           case '\\' => (quoteState, buffer.append('\\') , Nil)
           case '/' => (quoteState, buffer.append('/') , Nil)
@@ -135,21 +127,21 @@ class LexemeGenerator(tokens:Iterator[TextToken]) extends LexemeGen(tokens){
     
     
     private case object tState extends State {
-      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+      override def apply(token:TextToken , buffer:StringBuilder) = token.char match {
         case 'r' => (rState , buffer , Nil)
         case _ => throw new IllegalStateException(s"Bad supposed boolean value at line: ${token.lineNumber}, column: ${token.columnNumber}")
       }
     }
     
     private case object rState extends State {
-      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+      override def apply(token:TextToken , buffer:StringBuilder) = token.char match {
         case 'u' => (uState , buffer , Nil)
         case _ => throw new IllegalStateException(s"Bad supposed boolean value at line: ${token.lineNumber}, column: ${token.columnNumber}")
       }
     }
     
     private case object uState extends State {
-      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+      override def apply(token:TextToken , buffer:StringBuilder) = token.char match {
         case 'e' => (startState , buffer , new BooleanLexeme(true,token.lineNumber,token.columnNumber) :: Nil)
         case 'l' => (lState , buffer , Nil)
         case _ => throw new IllegalStateException(s"Bad supposed boolean value at line: ${token.lineNumber}, column: ${token.columnNumber}")
@@ -157,21 +149,21 @@ class LexemeGenerator(tokens:Iterator[TextToken]) extends LexemeGen(tokens){
     }
     
     private case object fState extends State {
-      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+      override def apply(token:TextToken , buffer:StringBuilder) = token.char match {
         case 'a' => (aState, buffer , Nil)
         case _ => throw new IllegalStateException(s"Bad supposed boolean value at line: ${token.lineNumber}, column: ${token.columnNumber}")
       }
     }
     
     private case object aState extends State {
-      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+      override def apply(token:TextToken , buffer:StringBuilder) = token.char match {
         case 'l' => (lState , buffer , Nil)
         case _ => throw new IllegalStateException(s"Bad supposed boolean value at line: ${token.lineNumber}, column: ${token.columnNumber}")
       }
     }
     
     private case object lState extends State {
-       override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+       override def apply(token:TextToken , buffer:StringBuilder) = token.char match {
         case 's' => (sState , buffer , Nil)
         case 'l' => (startState , buffer , new StringLexeme(null,token.lineNumber,token.columnNumber) :: Nil)
         case _ => throw new IllegalStateException(s"Bad supposed boolean value at line: ${token.lineNumber}, column: ${token.columnNumber}")
@@ -179,14 +171,14 @@ class LexemeGenerator(tokens:Iterator[TextToken]) extends LexemeGen(tokens){
     }
     
     private case object sState extends State {
-       override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+       override def apply(token:TextToken , buffer:StringBuilder) = token.char match {
         case 'e' => (startState , buffer , new BooleanLexeme(false,token.lineNumber,token.columnNumber) :: Nil)
         case _ => throw new IllegalStateException(s"Bad supposed boolean value at line: ${token.lineNumber}, column: ${token.columnNumber}")
       }
     }
     
     private case object nState extends State {
-      override def transition(token:TextToken , buffer:StringBuilder) = token.char match {
+      override def apply(token:TextToken , buffer:StringBuilder) = token.char match {
         case 'u' => (uState , buffer , Nil)
         case _ => throw new IllegalStateException(s"Bad supposed null value at line: ${token.lineNumber}, column: ${token.columnNumber}")
       }
@@ -202,7 +194,7 @@ class LexemeGenerator(tokens:Iterator[TextToken]) extends LexemeGen(tokens){
     
     override def getStream() = tokens.scanLeft((startState:State, stringBuffer, List[Lexeme]()))( ( acc , token) => {
         val (state , buffer , _) = acc
-        state.transition(token , buffer)
+        state(token , buffer)
     }).map(f => f._3).flatten
     
     

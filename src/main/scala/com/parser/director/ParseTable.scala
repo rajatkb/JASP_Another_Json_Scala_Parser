@@ -1,9 +1,10 @@
 package com.parser.director
 
 import scala.annotation.tailrec
+
+import com.json.traits.JsonBuilder
 import com.lexer.traits.Lexeme
 import com.lexer.traits.SymbolTable
-import com.json.traits.JsonBuilder
 
 trait ParseTable extends SymbolTable {
   

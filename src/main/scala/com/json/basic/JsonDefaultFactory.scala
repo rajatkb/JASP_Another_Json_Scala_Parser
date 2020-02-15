@@ -1,8 +1,9 @@
 package com.json.basic
 
 import com.json.traits.JsonFactory
-import com.json.traits.JsonValue
 import com.json.traits.JsonKey
+import com.json.traits.JsonValue
+
 
 object JsonDefaultFactory extends JsonFactory{
     override def createJsonStringEntity(str:String , args:Any*) = new JsonString(str) 
