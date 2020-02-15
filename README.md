@@ -91,8 +91,7 @@ You can run the above for testing the package by changing the filename ,
 
 ## How to Contribute
 * Just move to the com.unit.test package. then move to Object JSON. From there on you can follow the code
-* Parser is built with a builder pattern and objects are initialised using Prototypes of their instance
-* The idea was to program using interfaces. The only place InstanceOf was used in the prototype copy method. ~~(Need working out)~~
+* Parser is built with a builder pattern and objects are initialised using abstract factory whose default implementation is providedd in the library
 * Create pull request against one of the To-Dos, or maybe add your own issue and also do post some test case for same in a sepparate unit test if you can.
 
 
